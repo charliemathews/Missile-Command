@@ -36,6 +36,8 @@ void EntityManager::clear()
 		delete current->pattern ;
 		current = current->next ;
 	}
+	pool = NULL ;
+	size = 0 ;
 }
 
 EntityManager::Node* EntityManager::getLast()
