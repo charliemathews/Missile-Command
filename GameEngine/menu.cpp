@@ -43,26 +43,34 @@ void Menu::initialize(Graphics *g, Input *i)
 
 int Menu::update()
 {
-	if (input->isKeyDown(VK_UP)) upDepressedLastFrame = true;
-	if (input->isKeyDown(VK_DOWN)) downDepressedLastFrame = true;
-	if(input->isKeyDown(VK_RETURN)) enterDepressedLastFrame = true;
-	if (!input->isKeyDown(VK_UP) && upDepressedLastFrame)
+	if(input->getMouseLButton()) enterDepressedLastFrame = true;
+	
+	int yPos = input->getMouseY();
+	
+	if(yPos >= menuAnchor.y&& yPos <= menuAnchor.y + 30)
 	{
-		linePtr--;
-		upDepressedLastFrame = false;
+		selectedItem = 0;
 	}
-	if (!input->isKeyDown(VK_DOWN) && downDepressedLastFrame)
+	
+	int foo = verticalOffset;
+	if(yPos >= menuAnchor.y + foo && yPos <= menuAnchor.y + foo + 30)
 	{
-		linePtr++;
-		downDepressedLastFrame = false;
+		selectedItem = 1;
 	}
-	if (linePtr > 3) linePtr = 0;
-	if (linePtr < 0) linePtr = 3;
-
-	if (!input->isKeyDown(VK_RETURN) && enterDepressedLastFrame)
+	foo = verticalOffset *2;
+	if(yPos >= menuAnchor.y + foo && yPos <= menuAnchor.y + foo + 30)
 	{
-
-		selectedItem = linePtr;
+		selectedItem = 2;
+	}
+	foo = verticalOffset *3;
+	if(yPos >= menuAnchor.y + foo && yPos <= menuAnchor.y + foo + 30)
+	{
+		selectedItem = 3;
+	}
+	linePtr = selectedItem;
+	if (!input->getMouseLButton() && enterDepressedLastFrame)
+	{	
+		linePtr = selectedItem;
 		if(selectedItem == 1)
 		{
 			if(menuItem2=="Disable SoundFX")
@@ -79,7 +87,7 @@ int Menu::update()
 		return selectedItem;
 	}
 	else selectedItem = -1;
-	
+	return -1;
 }
 
 void Menu::displayMenu()

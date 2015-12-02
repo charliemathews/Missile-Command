@@ -27,6 +27,9 @@ void myGame::initialize(HWND hwnd)
 {
     Game::initialize(hwnd); 
 	
+	
+	enterDepressedLastFrame = false;
+
 /* INITIALIZE PATTERNS */
 	lambda alien_enter = [&] (Entity* e) {
 		e->setVelocity(D3DXVECTOR2(-100,0)) ;
@@ -289,12 +292,24 @@ void myGame::update()
 		}
 		break;
 	case credits:
-		if(input->isKeyDown(VK_SPACE)/*&&!input->isKeyDown(VK_RETURN)*/) gameStates = gameMenu;
+		
+		if(input->getMouseLButton()) enterDepressedLastFrame = true;
+		if (!input->getMouseLButton() && enterDepressedLastFrame)
+		{
+			gameStates = gameMenu;
+			enterDepressedLastFrame = false;
+		}
 		break;
 	case instruct:
-		if(input->isKeyDown(VK_SPACE)/*&&!input->isKeyDown(VK_RETURN)*/) gameStates = gameMenu;
+		if(input->getMouseLButton()) enterDepressedLastFrame = true;
+		if (!input->getMouseLButton() && enterDepressedLastFrame)
+		{
+			gameStates = gameMenu;
+			enterDepressedLastFrame = false;
+		}
 		break;
 	}
+
 	
 }
 

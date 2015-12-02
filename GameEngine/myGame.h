@@ -62,7 +62,7 @@ private:
 	float bolideTimer ;
 	int tickCounter;
 	bool getMouseDepressedLast;
-
+	bool enterDepressedLastFrame;
 	//text
 	std::stringstream buffer ;
 
