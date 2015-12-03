@@ -142,7 +142,7 @@ void EntityManager::draw()
 	
 	while(current != NULL)
 	{
-		if(current->single->getActive() == 1) current->single->draw() ;
+		if(current->single->getActive() == 1) current->single->draw(current->single->getColorFilter()) ;
 		current = current->next ;
 	}
 }

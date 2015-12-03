@@ -18,7 +18,7 @@ Alien::Alien() : Entity()
     startFrame = 0;              
     endFrame     = 0;              
     currentFrame = startFrame;
-    radius = alienNS::WIDTH/2.0;                 // collision radius
+    radius = alienNS::WIDTH/3.0;                 // collision radius
     collision = false;
     collisionType = entityNS::CIRCLE;
     target = false;

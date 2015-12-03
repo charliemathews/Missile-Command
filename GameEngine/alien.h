@@ -11,8 +11,8 @@ class Alien;
 
 namespace alienNS
 {
-	const int WIDTH = 200;					// image width
-	const int HEIGHT = 200;					// image height
+	const int WIDTH = 100;					// image width
+	const int HEIGHT = 40;					// image height
 	const int X = 0;						// location on screen
 	const int Y = 0;
 	const float SPEED_X = 50;				// initial velocity

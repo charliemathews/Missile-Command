@@ -26,8 +26,14 @@ myGame::~myGame()
 void myGame::initialize(HWND hwnd)
 {
     Game::initialize(hwnd); 
+	/*
+	graphics->get3Ddevice()->SetRenderState(D3DRS_ALPHABLENDENABLE,true);
+	graphics->get3Ddevice()->SetRenderState(D3DRS_BLENDOP,D3DBLENDOP_ADD);
+	graphics->get3Ddevice()->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	graphics->get3Ddevice()->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);*/
+
 	
-	
+
 	enterDepressedLastFrame = false;
 
 /* INITIALIZE PATTERNS */
@@ -91,6 +97,8 @@ void myGame::initialize(HWND hwnd)
 	//particles
 	pm.initialize(graphics);
 
+
+
 	//
 	if(!backgroundTM.initialize(graphics,STARBACK_IMAGE))
     	throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing background texture"));
@@ -146,8 +154,13 @@ void myGame::initialize(HWND hwnd)
 	newAlien2->setScale(1);
 	//newAlien2->camp() ;
 	aliens.add(newAlien2, new Pattern(alienPattern)) ;
-
-
+	
+	//menu screen alien
+	if (!mAlien.initialize(this, alienNS::WIDTH, alienNS::HEIGHT, 1, &alienTM))
+		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing menu alien image"));
+	mAlien.setVelocity(VECTOR2(200,150));
+	mAlien.setX(rand()%GAME_WIDTH);
+	mAlien.setY(rand()%GAME_HEIGHT);
 	//player
 	if (!playerTM.initialize(graphics,PLAYER_IMAGE))
     	throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing player texture"));
@@ -237,6 +250,12 @@ void myGame::initialize(HWND hwnd)
 void myGame::update()
 {
 	int lineOpt = 0;
+
+	
+	VECTOR2 vel;
+	VECTOR2* foo;
+	int prevX ;
+	int prevY ;
 	switch(gameStates)
 	{
 	case gameMenu:
@@ -256,6 +275,9 @@ void myGame::update()
 		if(lineOpt == 2) gameStates = instruct;
 		if(lineOpt == 3) gameStates = credits;
 		
+		//lil menu alien
+		//mAlien.update(frameTime);
+
 		break;
 	case gamePlay:
 		ShowCursor(false);
@@ -274,7 +296,6 @@ void myGame::update()
 		{
 			gameStates = endGame;
 		}
-
 		if(bolideTimer < 1.00) bolideTimer += frameTime ;
 		else
 		{
@@ -287,6 +308,11 @@ void myGame::update()
 			if(scoreDispCounter < 1.00) scoreDispCounter += frameTime ;
 			else
 			{
+				City** cities_raw = (City**)cities.getArray();
+				for(int i = 0; i < 4; i++)
+				{
+					cities_raw[i]->setColorFilter(graphicsNS::WHITE);
+				}
 				scoreFont->setFontColor(graphicsNS::WHITE);
 				scoreDispCounter = 0;
 			}
@@ -347,7 +373,8 @@ void myGame::update()
 //=============================================================================
 void myGame::ai()
 {
-	aliens.ai(frameTime);
+	
+	if(gameStates == gamePlay) aliens.ai(frameTime);
 	//stringstream ss ;
 	//ss << endl << alienPatternStepIndex << endl ;
 	//OutputDebugString(ss.str().c_str());
@@ -414,6 +441,7 @@ void myGame::collisions()
 			VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (50 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
 			createParticleEffect(foo, bar, 10);
 			scoreFont->setFontColor(graphicsNS::RED);
+			cityCollision->setColorFilter(graphicsNS::RED);
 		}
 		cityCollision == NULL ;
 	}
@@ -432,6 +460,9 @@ void myGame::collisions()
 				score += 200 ;
 				collisionVector = D3DXVECTOR2(0,0);
 				scoreFont->setFontColor(graphicsNS::GREEN);
+				VECTOR2 foo = VECTOR2(bolides_raw[i]->getPositionX()-10, bolides_raw[i]->getPositionY()+5);
+				VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (40 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (40)) + 0);
+				createParticleEffect(foo, bar, 25);
 			}
 			rocketCollision == NULL ;
 		}
@@ -440,6 +471,8 @@ void myGame::collisions()
 	if(spits_size > 0)
 	{
 		Spitball** spits_raw = (Spitball**)spits.getArray();
+		City** cities_raw = (City**)cities.getArray();
+
 		for(int i = 0; i < spits_size; ++i)
 		{
 			rocketCollision = (Rocket*)rockets.checkCollision(spits_raw[i], collisionVector) ;
@@ -463,7 +496,10 @@ void myGame::collisions()
 				score -= 200 ;
 				collisionVector = D3DXVECTOR2(0,0);
 				scoreFont->setFontColor(graphicsNS::RED);
+				cityCollision->setColorFilter(graphicsNS::RED);
+			
 			}
+			
 			cityCollision == NULL ;
 		}
 	}
@@ -477,6 +513,7 @@ void myGame::collisions()
 void myGame::render()
 {
 	RECT scoreRect = {-400,0,400,400};
+
     std::stringstream ss ;
     graphics->spriteBegin(); // begin drawing sprites
 	
@@ -485,26 +522,24 @@ void myGame::render()
 	case gameMenu:
 		backgroundImage.draw();
 		menu->displayMenu();
+		mAlien.draw();
 		break;
 	case gamePlay:
 		backgroundImage.draw();
 		starImage.draw();
-		
-		//get text width
-		
-		
+	
+		//draw score
 		ss << score;
-		//scoreFont->print("Score: "+ss.str(), GAME_WIDTH/2-150,thePlayer.getY()-60);
 		scoreFont->print(ss.str(), scoreRect, DT_CALCRECT);
 		scoreFont->print(ss.str(), GAME_WIDTH/2-scoreWidth/2,460);
 		scoreWidth = scoreRect.right - scoreRect.left;
 		cities.draw();
-		bolides.draw();
-		pm.draw();
-		aliens.draw();
-		thePlayer.draw();
-		rockets.draw();
 		spits.draw();
+		bolides.draw();
+		aliens.draw();
+		pm.draw();
+		thePlayer.draw(thePlayer.getColorFilter());
+		rockets.draw();
 		crossHairImage.draw();
 		break;
 	case endGame:
@@ -629,13 +664,13 @@ void myGame::fireRocket()
 	if (!newRocket->initialize(this, rocketNS::WIDTH, rocketNS::HEIGHT,1, &rocketTM))
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing rocket entity"));
 
-	newRocket->setX(thePlayer.getCenterX());
+	newRocket->setX(thePlayer.getCenterX()-20);
 	newRocket->setY(thePlayer.getY());
 	newRocket->setEdge(COLLISION_BOX_ROCKET);
 	newRocket->setScale(1);
 	newRocket->setVelocity(VECTOR2(rocketNS::SPEED_X,rocketNS::SPEED_Y));
 		
-	newRocket->setX(thePlayer.getX() + 30);
+	newRocket->setX(thePlayer.getX() + 20);
 	newRocket->setY(thePlayer.getY());
 
 	int xClick = input->getMouseX();
@@ -684,5 +719,4 @@ void myGame::createParticleEffect(VECTOR2 pos, VECTOR2 vel, int numParticles){
 	pm.setPosition(pos);
 	pm.setVelocity(vel);
 	pm.setVisibleNParticles(numParticles);
-
 }

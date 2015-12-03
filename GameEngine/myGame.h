@@ -53,6 +53,7 @@ private:
 	TextDX* scoreFont;
 	int scoreWidth;
 
+	Alien mAlien;
 	Player thePlayer ;
 	EntityManager aliens ;
 	EntityManager rockets ;
