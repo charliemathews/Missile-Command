@@ -86,7 +86,8 @@ const int MAX_ALIENS = 10;
 const int MAX_ASTEROIDS = 10;
 const int MAX_CITIES = 4;
 const int GAME_END_TIME = 120000;
-
+const float MAX_PARTICLE_LIFETIME = 1.5f;
+const int MAX_NUMBER_PARTICLES = 500;
 // game
 const double PI = 3.14159265;
 const float FRAME_RATE = 200.0f;                // the target frame rate (frames/sec)
@@ -112,6 +113,8 @@ const char STAR_IMAGE[] = "pictures\\topstars.png";
 const char INSTRUCT_IMAGE[] = "pictures\\instruct.png";
 const char SPIT_IMAGE[] = "pictures\\spitball.png";
 const char ASTEROID_IMAGE[] = "pictures\\asteroid.png";
+const char CROSS_IMAGE[] = "pictures\\crosshair6.png";
+const char DUST_IMAGE[] = "pictures\\dust.jpg";
 // key mappings
 const UCHAR ESC_KEY      = VK_ESCAPE;       // escape key
 const UCHAR ALT_KEY      = VK_MENU;         // Alt key

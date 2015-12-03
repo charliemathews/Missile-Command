@@ -87,6 +87,10 @@ void myGame::initialize(HWND hwnd)
 	alienPattern2->addStep(6, "LEFT", 5, [&] (Entity* e) {
 		e->setVelocity(D3DXVECTOR2(-100,0));
 	});
+
+	//particles
+	pm.initialize(graphics);
+
 	//
 	if(!backgroundTM.initialize(graphics,STARBACK_IMAGE))
     	throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing background texture"));
@@ -114,8 +118,13 @@ void myGame::initialize(HWND hwnd)
     	throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing bolide texture"));
 	if (!rocketTM.initialize(graphics,ROCKET_IMAGE))
     	throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing rocket texture"));
-    	if (!spitTM.initialize(graphics,SPIT_IMAGE))
+    if (!spitTM.initialize(graphics,SPIT_IMAGE))
     	throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing spit texture"));
+	//init crosshair
+	if (!crossHairTM.initialize(graphics,CROSS_IMAGE))
+    	throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing cross hair texture"));
+	if (!crossHairImage.initialize(graphics,0,0,1, &crossHairTM))
+		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing cross hair image"));
 	
 	Alien* newAlien = new Alien() ;
 	if (!newAlien->initialize(this, alienNS::WIDTH, alienNS::HEIGHT, 1, &alienTM))
@@ -245,7 +254,7 @@ void myGame::update()
 		
 		break;
 	case gamePlay:
-				
+		ShowCursor(false);
 		if(input->getMouseLButton())getMouseDepressedLast = true;
 		if(!input->getMouseLButton()&&getMouseDepressedLast)
 		{
@@ -275,6 +284,13 @@ void myGame::update()
 		rockets.update(frameTime);
 		bolides.update(frameTime);
 		spits.update(frameTime);
+		
+		//
+		crossHairImage.setX(input->getMouseX() - crossHairImage.getWidth()/3);
+		crossHairImage.setY(input->getMouseY() - crossHairImage.getHeight()/2);
+
+		//particles
+		pm.update(frameTime);
 
 		break;
 	case endGame:
@@ -364,7 +380,11 @@ void myGame::collisions()
 			rocketCollision->setActive(false);
 			bolides_raw[i]->setHealth(-1);
 			score += 50 ;
+			VECTOR2 foo = VECTOR2(bolides_raw[i]->getPositionX()-10, bolides_raw[i]->getPositionY()+5);
+			VECTOR2 bar = VECTOR2(-10,0);
+			createParticleEffect(foo, bar, 10);
 			collisionVector = D3DXVECTOR2(0,0);
+			
 		}
 		rocketCollision == NULL ;
 
@@ -452,10 +472,15 @@ void myGame::render()
 
 		cities.draw();
 		bolides.draw();
+		pm.draw();
 		aliens.draw();
 		thePlayer.draw();
 		rockets.draw();
 		spits.draw();
+		
+
+
+		crossHairImage.draw();
 		break;
 	case endGame:
 		backgroundImage.draw();
@@ -497,6 +522,7 @@ void myGame::releaseAll()
 	cityTM.onLostDevice();
 	playerTM.onLostDevice();
 	spitTM.onLostDevice();
+	crossHairTM.onLostDevice();
 
 	rockets.clear();
 	cities.clear();
@@ -525,6 +551,7 @@ void myGame::resetAll()
 	cityTM.onResetDevice();
 	playerTM.onResetDevice();
 	spitTM.onResetDevice();
+	crossHairTM.onResetDevice();
     Game::resetAll();
     return;
 }
@@ -625,4 +652,12 @@ void myGame::fireSpitball(VECTOR2 source)
 
 		spits.add(newSpitball);
 		if(sfxOn)audio->playCue("shoot");
+}
+
+void myGame::createParticleEffect(VECTOR2 pos, VECTOR2 vel, int numParticles){
+
+	pm.setPosition(pos);
+	pm.setVelocity(vel);
+	pm.setVisibleNParticles(numParticles);
+
 }

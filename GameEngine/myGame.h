@@ -32,6 +32,7 @@ class myGame;
 	#include "bolide.h"
 	#include "spitball.h"
 	#include "rocket.h"
+#include "particleManager.h"
 
 //=============================================================================
 // This class is the core of the game
@@ -40,9 +41,8 @@ class myGame : public Game
 {
 private:
     TextureManager alienTM, rocketTM,bolideTM,cityTM,playerTM, spitTM ;
-	TextureManager backgroundTM,starsTM,creditsTM,instructTM ;
-	Image backgroundImage, starImage, creditsImage, instructImage ;
-
+	TextureManager backgroundTM,starsTM,creditsTM,instructTM,crossHairTM ;
+	Image backgroundImage, starImage, creditsImage, instructImage, crossHairImage;
     VECTOR2 collisionVector ;
 	
 	GameStates gameStates ;
@@ -65,6 +65,9 @@ private:
 	bool enterDepressedLastFrame;
 	//text
 	std::stringstream buffer ;
+	//particles
+	ParticleManager pm;
+
 
 public:
     // Constructor
@@ -86,6 +89,7 @@ public:
 	void setSFX(){sfxOn = !sfxOn;}
 	void fireRocket();
 	void fireSpitball(VECTOR2 source);
+	void createParticleEffect(VECTOR2 pos, VECTOR2 vel, int numParticles);
 };
 
 #endif

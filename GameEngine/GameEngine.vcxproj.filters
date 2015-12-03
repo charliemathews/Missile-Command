@@ -93,6 +93,12 @@
     <ClCompile Include="spitball.cpp">
       <Filter>Source Files\Entities\Projectiles</Filter>
     </ClCompile>
+    <ClCompile Include="particle.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="particleManager.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="myGame.h">
@@ -156,6 +162,12 @@
       <Filter>Header Files\Entities</Filter>
     </ClInclude>
     <ClInclude Include="player.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="particle.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="particleManager.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
