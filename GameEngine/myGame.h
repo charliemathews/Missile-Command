@@ -50,6 +50,8 @@ private:
 	bool sfxOn ;
 
 	TextDX* dxFont;
+	TextDX* scoreFont;
+	int scoreWidth;
 
 	Player thePlayer ;
 	EntityManager aliens ;
@@ -60,6 +62,7 @@ private:
 
 	int score ;
 	float bolideTimer ;
+	float scoreDispCounter ;
 	int tickCounter;
 	bool getMouseDepressedLast;
 	bool enterDepressedLastFrame;

@@ -153,7 +153,7 @@ void myGame::initialize(HWND hwnd)
     	throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing player texture"));
 	if (!thePlayer.initialize(this, playerNS::WIDTH, playerNS::HEIGHT, 1, &playerTM))
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing alien entity"));
-	thePlayer.setX((GAME_WIDTH/2)-playerNS::WIDTH/2 + 20);
+	thePlayer.setX((GAME_WIDTH/2)-playerNS::WIDTH/2+30);
 	thePlayer.setY(GAME_HEIGHT - thePlayer.getHeight());
 	thePlayer.setEdge(COLLISION_BOX_PLAYER);
 	thePlayer.setScale(1);
@@ -205,8 +205,12 @@ void myGame::initialize(HWND hwnd)
 	//initiialize font
 	dxFont = new TextDX();
 	if(dxFont->initialize(graphics, 25, true, false, "Retro Computer") == false)
-        throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing score font"));
+        throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing text font"));
 	dxFont->setFontColor(graphicsNS::RED);
+	scoreFont = new TextDX();
+	if(scoreFont->initialize(graphics, 50, true, false, "Retro Computer") == false)
+        throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing score font"));
+	scoreFont->setFontColor(graphicsNS::WHITE);
 	
 	
 	// Initialize Menu
@@ -216,7 +220,7 @@ void myGame::initialize(HWND hwnd)
 	sfxOn = true;
 	score = 0;
 	bolideTimer = 0 ;
-
+	scoreDispCounter = 0;
 	gameStates = gameMenu;
 	getMouseDepressedLast = false;
 
@@ -277,6 +281,15 @@ void myGame::update()
 			int randNum = (rand()%4)-1;
 			spawnBolide(VECTOR2(randNum*2*cityNS::WIDTH,0));
 			bolideTimer = 0 ;
+		}
+		if(scoreFont->getFontColor()!=graphicsNS::WHITE)
+		{
+			if(scoreDispCounter < 1.00) scoreDispCounter += frameTime ;
+			else
+			{
+				scoreFont->setFontColor(graphicsNS::WHITE);
+				scoreDispCounter = 0;
+			}
 		}
 		aliens.update(frameTime);
 		cities.update(frameTime);
@@ -381,9 +394,10 @@ void myGame::collisions()
 			bolides_raw[i]->setHealth(-1);
 			score += 50 ;
 			VECTOR2 foo = VECTOR2(bolides_raw[i]->getPositionX()-10, bolides_raw[i]->getPositionY()+5);
-			VECTOR2 bar = VECTOR2(-10,0);
+			VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (50 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
 			createParticleEffect(foo, bar, 10);
 			collisionVector = D3DXVECTOR2(0,0);
+			scoreFont->setFontColor(graphicsNS::GREEN);
 			
 		}
 		rocketCollision == NULL ;
@@ -396,6 +410,10 @@ void myGame::collisions()
 			bolides_raw[i]->setHealth(-1);
 			score -= 500 ;
 			collisionVector = D3DXVECTOR2(0,0);
+			VECTOR2 foo = VECTOR2(bolides_raw[i]->getPositionX()-10, bolides_raw[i]->getPositionY()+5);
+			VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (50 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
+			createParticleEffect(foo, bar, 10);
+			scoreFont->setFontColor(graphicsNS::RED);
 		}
 		cityCollision == NULL ;
 	}
@@ -413,6 +431,7 @@ void myGame::collisions()
 				aliens_raw[i]->setHealth(-1);
 				score += 200 ;
 				collisionVector = D3DXVECTOR2(0,0);
+				scoreFont->setFontColor(graphicsNS::GREEN);
 			}
 			rocketCollision == NULL ;
 		}
@@ -431,6 +450,7 @@ void myGame::collisions()
 				spits_raw[i]->setHealth(-1);
 				score += 80 ;
 				collisionVector = D3DXVECTOR2(0,0);
+				scoreFont->setFontColor(graphicsNS::GREEN);
 			}
 			rocketCollision == NULL ;
 
@@ -442,6 +462,7 @@ void myGame::collisions()
 				spits_raw[i]->setHealth(-1);
 				score -= 200 ;
 				collisionVector = D3DXVECTOR2(0,0);
+				scoreFont->setFontColor(graphicsNS::RED);
 			}
 			cityCollision == NULL ;
 		}
@@ -455,8 +476,10 @@ void myGame::collisions()
 //=============================================================================
 void myGame::render()
 {
+	RECT scoreRect = {-400,0,400,400};
     std::stringstream ss ;
     graphics->spriteBegin(); // begin drawing sprites
+	
 	switch(gameStates)
 	{
 	case gameMenu:
@@ -467,9 +490,14 @@ void myGame::render()
 		backgroundImage.draw();
 		starImage.draw();
 		
+		//get text width
+		
+		
 		ss << score;
-		dxFont->print("Score: "+ss.str(), 0,0);
-
+		//scoreFont->print("Score: "+ss.str(), GAME_WIDTH/2-150,thePlayer.getY()-60);
+		scoreFont->print(ss.str(), scoreRect, DT_CALCRECT);
+		scoreFont->print(ss.str(), GAME_WIDTH/2-scoreWidth/2,460);
+		scoreWidth = scoreRect.right - scoreRect.left;
 		cities.draw();
 		bolides.draw();
 		pm.draw();
@@ -477,9 +505,6 @@ void myGame::render()
 		thePlayer.draw();
 		rockets.draw();
 		spits.draw();
-		
-
-
 		crossHairImage.draw();
 		break;
 	case endGame:
