@@ -105,6 +105,7 @@ const RECT	COLLISION_BOX_ASTEROID = {-30,-30,30,30};
 const char ALIEN_IMAGE[] = "pictures\\alien1.png" ;
 const char ROCKET_IMAGE[] = "pictures\\rockest.png" ;
 const char STARBACK_IMAGE[] = "pictures\\star3.png" ;
+const char STARBACK2_IMAGE[] = "pictures\\star32.png" ;
 const char BUILDING_IMAGE[] = "pictures\\building.png" ;
 const char PLAYER_IMAGE[] = "pictures\\player.png" ;
 const char CREDIT_IMAGE[] = "pictures\\credits.png" ;
@@ -113,7 +114,7 @@ const char INSTRUCT_IMAGE[] = "pictures\\instruct.png";
 const char SPIT_IMAGE[] = "pictures\\spitball.png";
 const char ASTEROID_IMAGE[] = "pictures\\asteroid.png";
 const char CROSS_IMAGE[] = "pictures\\crosshair6.png";
-const char DUST_IMAGE[] = "pictures\\dust.jpg";
+const char DUST_IMAGE[] = "pictures\\dust.png";
 // key mappings
 const UCHAR ESC_KEY      = VK_ESCAPE;       // escape key
 const UCHAR ALT_KEY      = VK_MENU;         // Alt key

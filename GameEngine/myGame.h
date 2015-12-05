@@ -14,6 +14,8 @@ class myGame;
 #include <string>
 #include <sstream>
 #include <ctime>
+#include <iostream>
+#include <fstream>
 
 #include "constants.h"
 #include "entityManager.h"
@@ -41,8 +43,8 @@ class myGame : public Game
 {
 private:
     TextureManager alienTM, rocketTM,bolideTM,cityTM,playerTM, spitTM ;
-	TextureManager backgroundTM,starsTM,creditsTM,instructTM,crossHairTM ;
-	Image backgroundImage, starImage, creditsImage, instructImage, crossHairImage;
+	TextureManager backgroundTM, background2TM,starsTM,creditsTM,instructTM,crossHairTM;
+	Image backgroundImage, backgroundImage2, starImage, creditsImage, instructImage, crossHairImage;
     VECTOR2 collisionVector ;
 	
 	GameStates gameStates ;
