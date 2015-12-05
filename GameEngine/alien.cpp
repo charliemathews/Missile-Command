@@ -104,14 +104,14 @@ void Alien::evade() // anti-tracking
 
 void Alien::deltaTrack()
 {
-	//VECTOR2 vel = D2DXVECTOR2(1,1);
-	//VECTOR2 targetCenter = targetEntity.getCenterPoint();
-	//if(getCenterPoint().y <= targetCenter.y) vel.y = -1 ;
-	//if(getCenterPoint().x <= targetCenter.x) vel.x = -1 ;
+	VECTOR2 vel = D2DXVECTOR2(1,1);
+	VECTOR2 targetCenter = targetEntity.getCenterPoint();
+	if(getCenterPoint().y <= targetCenter.y) vel.y = -1 ;
+	if(getCenterPoint().x <= targetCenter.x) vel.x = -1 ;
 
-	//if(vel.x == 0 && vel.y == 0) return ;
-	//VECTOR2* foo = D3DXVec2Normalize(&vel, &vel);
-	//setVelocity(-vel);
+	if(vel.x == 0 && vel.y == 0) return ;
+	VECTOR2* foo = D3DXVec2Normalize(&vel, &vel);
+	setVelocity(-vel);
 	return ;
 }
 

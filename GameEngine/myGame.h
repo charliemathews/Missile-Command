@@ -64,7 +64,9 @@ private:
 	EntityManager spits ;
 
 	int score ;
+	float timer ;
 	float bolideTimer ;
+	float alienTimer ;
 	float scoreDispCounter ;
 	int tickCounter;
 	bool getMouseDepressedLast;
@@ -73,7 +75,14 @@ private:
 	std::stringstream buffer ;
 	//particles
 	ParticleManager pm;
+	//patterns
+	Pattern* alienPattern;
+	Pattern* alienPattern2;
+	Pattern* alienPattern3;
+	Pattern* alienPattern4;
 
+	bool isNight;
+	bool isTutorial;
 
 public:
     // Constructor
@@ -94,6 +103,7 @@ public:
 	void scrollBG();
 	void setSFX(){sfxOn = !sfxOn;}
 	void fireRocket();
+	void spawnAlien();
 	void fireSpitball(VECTOR2 source);
 	void createParticleEffect(VECTOR2 pos, VECTOR2 vel, int numParticles);
 };
