@@ -85,7 +85,7 @@ const int MAX_ROCKETS = 5;
 const int MAX_ALIENS = 10;
 const int MAX_ASTEROIDS = 10;
 const int MAX_CITIES = 4;
-const int GAME_END_TIME = 1200000;
+const int GAME_END_TIME = 120000;
 const float MAX_PARTICLE_LIFETIME = 1.5f;
 const int MAX_NUMBER_PARTICLES = 500;
 // game
@@ -98,12 +98,12 @@ const float MAX_FRAME_TIME = 1.0f/MIN_FRAME_RATE; // maximum time used in calcul
 const RECT  COLLISION_BOX_ALIEN = {-50, -20, 50, 20};
 const RECT	COLLISION_BOX_CITY = {-28,-30,28,30};
 const RECT	COLLISION_BOX_PLAYER = {-32,-42,32,42};
-const RECT	COLLISION_BOX_ROCKET = {-1,-5,1,5};
+const RECT	COLLISION_BOX_ROCKET = {-3,-22,3,22};
 const RECT	COLLISION_BOX_SPIT = {-16,-11,16,11};
 const RECT	COLLISION_BOX_ASTEROID = {-30,-30,30,30};
 // image file names
 const char ALIEN_IMAGE[] = "pictures\\alien1.png" ;
-const char ROCKET_IMAGE[] = "pictures\\rockest.png" ;
+const char ROCKET_IMAGE[] = "pictures\\rocket.png" ;
 const char STARBACK_IMAGE[] = "pictures\\star3.png" ;
 const char STARBACK2_IMAGE[] = "pictures\\star32.png" ;
 const char BUILDING_IMAGE[] = "pictures\\building.png" ;

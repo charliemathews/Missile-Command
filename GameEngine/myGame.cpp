@@ -613,8 +613,9 @@ void myGame::render()
 		bolides.draw();
 		aliens.draw();
 		pm.draw();
-		thePlayer.draw(thePlayer.getColorFilter());
 		rockets.draw();
+		thePlayer.draw(thePlayer.getColorFilter());
+	
 		crossHairImage.draw();
 
 		if(!isNight && nightCount == 0)
@@ -846,27 +847,24 @@ void myGame::fireRocket()
 	Rocket* newRocket = new Rocket();
 	if (!newRocket->initialize(this, rocketNS::WIDTH, rocketNS::HEIGHT,1, &rocketTM))
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing rocket entity"));
-
-	newRocket->setX(thePlayer.getCenterX()-20);
-	newRocket->setY(thePlayer.getY());
 	newRocket->setEdge(COLLISION_BOX_ROCKET);
 	newRocket->setScale(1);
 	newRocket->setVelocity(VECTOR2(rocketNS::SPEED_X,rocketNS::SPEED_Y));
 
-	newRocket->setX(thePlayer.getX() + 20);
+
+	newRocket->setX(thePlayer.getX()+15);
 	newRocket->setY(thePlayer.getY());
 
 	int xClick = input->getMouseX();
 	int yClick = input->getMouseY();
 
-	newRocket->setStartPos(newRocket->getX(),GAME_HEIGHT-thePlayer.getHeight());
+	newRocket->setStartPos(newRocket->getX(),thePlayer.getY());
 	VECTOR2 direc(xClick-newRocket->getX(), yClick - newRocket->getY());
 	newRocket->setTargetCoords(VECTOR2(xClick,yClick));
 	newRocket->setDir(direc);
 	newRocket->setAngle();
 	newRocket->setVisible();
 	newRocket->setAliveTime();
-	newRocket->setScale(2);
 	rockets.add(newRocket);
 	if(sfxOn)audio->playCue("shoot");
 }

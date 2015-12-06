@@ -55,15 +55,10 @@ void Rocket::update(float frameTime)
 	Entity::update(frameTime);
 	int prevX = spriteData.x;
 	int prevY = spriteData.y;
-	
-	VECTOR2 bulletLoc(spriteData.x,spriteData.y);
-	////bulletLoc.x = startPos.x + rocketNS::SPEED_X* frameTime * dir.x;
-	////bulletLoc.y = startPos.y + rocketNS::SPEED_Y* frameTime * dir.y;
-	bulletLoc.x += velocity.x;
-	bulletLoc.y += velocity.y;
 
-	spriteData.x = bulletLoc.x ;
-	spriteData.y = bulletLoc.y ;
+
+	spriteData.x += velocity.x * frameTime;
+	spriteData.y += velocity.y * frameTime;
 
 	//incPosition(D3DXVECTOR2(velocity*frameTime));
 	setPosition(VECTOR2(spriteData.x,spriteData.y));
