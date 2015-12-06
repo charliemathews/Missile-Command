@@ -435,7 +435,8 @@ void myGame::ai()
 //=============================================================================
 void myGame::collisions()
 {
-
+	if(gameStates == gamePlay)
+	{
 	collisionVector = D3DXVECTOR2(0,0); // clear collision vector
 
 	int bolides_size	= bolides.getSize();
@@ -464,22 +465,25 @@ void myGame::collisions()
 		}
 		bolideCollision == NULL ;
 
-		rocketCollision = (Rocket*)rockets.checkCollision(bolides_raw[i], collisionVector) ;
-		if(rocketCollision != NULL)
+		if(rockets_size > 0)
 		{
-			if(sfxOn)audio->playCue("hit");
-			rocketCollision->setActive(false);
-			bolides_raw[i]->setHealth(-1);
-			score += 100 ;
-			VECTOR2 foo = VECTOR2(bolides_raw[i]->getPositionX()-10, bolides_raw[i]->getPositionY()+5);
-			VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (50 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
-			createParticleEffect(foo, bar, 10);
-			collisionVector = D3DXVECTOR2(0,0);
+			rocketCollision = (Rocket*)rockets.checkCollision(bolides_raw[i], collisionVector) ;
+			if(rocketCollision != NULL)
+			{
+				if(sfxOn)audio->playCue("hit");
+				rocketCollision->setActive(false);
+				bolides_raw[i]->setHealth(-1);
+				score += 100 ;
+				VECTOR2 foo = VECTOR2(bolides_raw[i]->getPositionX()-10, bolides_raw[i]->getPositionY()+5);
+				VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (50 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
+				createParticleEffect(foo, bar, 10);
+				collisionVector = D3DXVECTOR2(0,0);
 			
-			scoreFont->setFontColor(graphicsNS::GREEN);
+				scoreFont->setFontColor(graphicsNS::GREEN);
 
+			}
+			rocketCollision == NULL ;
 		}
-		rocketCollision == NULL ;
 
 		cityCollision = (City*)cities.checkCollision(bolides_raw[i], collisionVector) ;
 		if(cityCollision != NULL)
@@ -500,7 +504,10 @@ void myGame::collisions()
 
 	if(aliens_size > 0)
 	{
+		
 		Alien** aliens_raw = (Alien**)aliens.getArray();
+		if(rockets_size > 0)
+		{
 		for(int i = 0; i < aliens_size; ++i)
 		{
 			rocketCollision = (Rocket*)rockets.checkCollision(aliens_raw[i], collisionVector) ;
@@ -518,7 +525,7 @@ void myGame::collisions()
 			}
 			rocketCollision == NULL ;
 		}
-
+		}
 		for(int i = 0; i < aliens_size; ++i)
 		{
 			alienCollision = (Alien*)aliens.checkCollision(aliens_raw[i], collisionVector) ;
@@ -571,7 +578,7 @@ void myGame::collisions()
 			cityCollision == NULL ;
 		}
 	}
-
+	}
 
 }
 
@@ -629,34 +636,37 @@ void myGame::render()
 		backgroundImage.draw();
 		starImage.draw();
 		//TO DO add score tally at end
+		if(isNight) dxFont->setFontColor(graphicsNS::WHITE);
 		ss.str("");
 		ss.clear();
 		if(cities.getSize() > 0) dxFont->print("Nice work!", 70, 50);
 		else dxFont->print("You tried...", 70, 50);
 
-		ss << nightCount;
-		if(nightCount > 1) dxFont->print("You made it " + ss.str() + " nights!",70,150);
-		else dxFont->print("You made it " + ss.str() + " night!",70,150);
+		
+		if(nightCount == 1) dxFont->print("You didn't even make it one night...",70,150);
+		else if(nightCount == 2) dxFont->print("You made it 1 night!",70,150);
+		else if(nightCount == 3) dxFont->print("You made it 2 nights!",70,150);
+		else if(nightCount == 4) dxFont->print("You made it all 3 nights!",70,150);
 
 		ss.str("");
 		ss.clear();
-		if(endedGame == false) nightCount++;
 		ss << nightCount;
 		dxFont->print("\t+ 200 x " + ss.str(),70,200);
 
 		ss.str("");
 		ss.clear();
 		ss<<cities.getSize();
-		dxFont->print(ss.str() + " cities survived.",70,300);
+		dxFont->print(ss.str() + " cities survived.",70,250);
 
 		ss.str("");
 		ss.clear();
 		cityMultiplier = cities.getSize();
 		ss << cityMultiplier;
-		dxFont->print("\t+ 100 x " + ss.str(),70,350);
+		dxFont->print("\t+ 100 x " + ss.str(),70,300);
 
 		if(endedGame == false) 
 		{
+			nightCount--;
 			score+=cityMultiplier*100;
 			score+=nightCount*200;
 		}
