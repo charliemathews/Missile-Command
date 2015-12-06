@@ -26,15 +26,6 @@ myGame::~myGame()
 void myGame::initialize(HWND hwnd)
 {
 	Game::initialize(hwnd); 
-	/*
-	graphics->get3Ddevice()->SetRenderState(D3DRS_ALPHABLENDENABLE,true);
-	graphics->get3Ddevice()->SetRenderState(D3DRS_BLENDOP,D3DBLENDOP_ADD);
-	graphics->get3Ddevice()->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-	graphics->get3Ddevice()->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);*/
-
-
-
-	enterDepressedLastFrame = false;
 
 	/* INITIALIZE PATTERNS */
 	lambda alien_enter = [&] (Entity* e) {
@@ -274,6 +265,7 @@ void myGame::initialize(HWND hwnd)
 	scoreDispCounter = 0;
 	gameStates = gameMenu;
 	getMouseDepressedLast = false;
+	enterDepressedLastFrame = false;
 	isNight = false;
 	isTutorial = true;
 	audio->playCue("background");
@@ -293,9 +285,7 @@ void myGame::update()
 
 	VECTOR2 vel;
 	VECTOR2* foo;
-	int prevX ;
-	int prevY ;
-	ofstream scoreFile;
+
 	switch(gameStates)
 	{
 	case gameMenu:
@@ -320,6 +310,7 @@ void myGame::update()
 	
 		break;
 	case gamePlay:
+		
 		ShowCursor(false);
 		if(input->getMouseLButton())getMouseDepressedLast = true;
 		if(!input->getMouseLButton()&&getMouseDepressedLast)
@@ -327,11 +318,14 @@ void myGame::update()
 			getMouseDepressedLast = false;
 			fireRocket();
 		}
+		
 		scrollBG();
+		
 		if(GetTickCount()-tickCounter >= GAME_END_TIME)
 		{
 			gameStates = endGame;
 		}
+		
 		if(alienTimer < 8.00) alienTimer += frameTime;
 		else if(isNight)
 		{
@@ -380,16 +374,15 @@ void myGame::update()
 		pm.update(frameTime);
 		break;
 	case endGame:
-	
-		scoreFile.open("score.txt");
-		scoreFile << score + "\n";
-		scoreFile.close();
-
-		if(input->isKeyDown(VK_RETURN)) 
+		
+		ShowCursor(true);
+		if(input->getMouseLButton()) enterDepressedLastFrame = true;
+		if (!input->getMouseLButton() && enterDepressedLastFrame)
 		{
 			audio->stopCue("background");
 			myGame::initialize(hwnd);
 			gameStates = credits;
+			enterDepressedLastFrame = false;
 		}
 		break;
 	case credits:
@@ -486,8 +479,8 @@ void myGame::collisions()
 			score -= 500 ;
 			collisionVector = D3DXVECTOR2(0,0);
 			VECTOR2 foo = VECTOR2(bolides_raw[i]->getPositionX()-10, bolides_raw[i]->getPositionY()+5);
-			VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (50 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
-			createParticleEffect(foo, bar, 10);
+			VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (20 - 10)) -10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
+			createParticleEffect(foo, VECTOR2(bar.x,-10), 10);
 			scoreFont->setFontColor(graphicsNS::RED);
 			cityCollision->setColorFilter(graphicsNS::RED);
 		}
@@ -580,8 +573,6 @@ void myGame::render()
 
 	std::stringstream ss ;
 	graphics->spriteBegin(); // begin drawing sprites
-	
-
 
 	switch(gameStates)
 	{
@@ -621,8 +612,12 @@ void myGame::render()
 		if(!isNight && isTutorial)
 		{
 			timer += frameTime;
-			if(timer <= 4.00)dxFont->print("Those darn llamas are back at it again tonight...\nCould you take care of it?", 100,100);
-			else if(timer <=9.00)dxFont->print("Click to fire your rockets\nto stop them before they take us out.\nOh, and deal with the asteroids too.", 100,100);
+			if(timer <= 4.00)dxFont->print("Those darn llamas are back at it\n again tonight...\nCould you take care of it?", 100,100);
+			else if(timer <=9.00)
+			{
+				dxFont->print("Click to fire your rockets\nto stop them before they take us out.\nOh, and deal with the asteroids too.", 100,100);
+				isTutorial = false;
+			}
 			
 		}
 
@@ -638,6 +633,7 @@ void myGame::render()
 		dxFont->print("Final Score: " + ss.str(),70,200);
 		ss.clear();
 		dxFont->print("press <enter> to continue",70,400);
+
 		break;
 	case credits:
 		creditsImage.draw();
@@ -758,17 +754,11 @@ void myGame::spawnBolide(VECTOR2 target)
 
 void myGame::scrollBG()
 {
-	//int prev = backgroundImage.getY();
-	//
+
 	if(GetTickCount() % 10000)
 	{
 		starImage.setY(starImage.getY()-50 * frameTime);
-	};
-	//backgroundImage.setY(backgroundImage.getY()-2);
-	//if(backgroundImage.getY()+backgroundImage.getHeight() <= GAME_HEIGHT)
-	//{
-	//	backgroundImage.setY(prev);
-	//}
+	}
 
 	float y = backgroundImage.getY() + (-35) * frameTime;
 	backgroundImage.setY(y);
