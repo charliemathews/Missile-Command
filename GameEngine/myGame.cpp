@@ -269,6 +269,7 @@ void myGame::initialize(HWND hwnd)
 	isNight = false;
 	isTutorial = true;
 	nightCount = 0;
+	endedGame = false;
 	audio->playCue("background");
 
 	srand(time(NULL));
@@ -322,10 +323,11 @@ void myGame::update()
 		
 		scrollBG();
 		
-		if(nightCount > 3)
+		if(nightCount >= 3 && backgroundImage.getY() <= -740)
 		{
 			gameStates = endGame;
 		}
+		if(cities.getSize() == 0) gameStates = endGame;
 		
 		if(alienTimer < 8.00) alienTimer += frameTime;
 		else if(isNight && nightCount < 3)
@@ -358,10 +360,9 @@ void myGame::update()
 			else
 			{
 				City** cities_raw = (City**)cities.getArray();
-				for(int i = 0; i < 4; i++)
+				for(int i = 0; i < cities.getSize(); i++)
 				{
-					cities_raw[i]->setColorFilter(graphicsNS::WHITE);
-					backgroundImage.setColorFilter(graphicsNS::WHITE);
+					if(cities_raw[i]->getActive())cities_raw[i]->setColorFilter(graphicsNS::WHITE);
 				}
 				scoreFont->setFontColor(graphicsNS::WHITE);
 				scoreDispCounter = 0;
@@ -383,7 +384,7 @@ void myGame::update()
 
 		break;
 	case endGame:
-		
+
 		ShowCursor(true);
 		if(input->getMouseLButton()) enterDepressedLastFrame = true;
 		if (!input->getMouseLButton() && enterDepressedLastFrame)
@@ -395,7 +396,7 @@ void myGame::update()
 		}
 		break;
 	case credits:
-
+		ShowCursor(true);
 		if(input->getMouseLButton()) enterDepressedLastFrame = true;
 		if (!input->getMouseLButton() && enterDepressedLastFrame)
 		{
@@ -404,6 +405,7 @@ void myGame::update()
 		}
 		break;
 	case instruct:
+		ShowCursor(true);
 		if(input->getMouseLButton()) enterDepressedLastFrame = true;
 		if (!input->getMouseLButton() && enterDepressedLastFrame)
 		{
@@ -468,7 +470,7 @@ void myGame::collisions()
 			if(sfxOn)audio->playCue("hit");
 			rocketCollision->setActive(false);
 			bolides_raw[i]->setHealth(-1);
-			score += 50 ;
+			score += 100 ;
 			VECTOR2 foo = VECTOR2(bolides_raw[i]->getPositionX()-10, bolides_raw[i]->getPositionY()+5);
 			VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (50 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
 			createParticleEffect(foo, bar, 10);
@@ -485,7 +487,7 @@ void myGame::collisions()
 			if(sfxOn)audio->playCue("explosion");
 			cityCollision->damage(1);
 			bolides_raw[i]->setHealth(-1);
-			score -= 500 ;
+			score -= 100 ;
 			collisionVector = D3DXVECTOR2(0,0);
 			VECTOR2 foo = VECTOR2(bolides_raw[i]->getPositionX()-10, bolides_raw[i]->getPositionY()+5);
 			VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (20 - 10)) -10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
@@ -507,7 +509,7 @@ void myGame::collisions()
 				if(sfxOn)audio->playCue("explosion");
 				rocketCollision->setActive(false);
 				aliens_raw[i]->setHealth(-1);
-				score += 200 ;
+				score += 250 ;
 				collisionVector = D3DXVECTOR2(0,0);
 				scoreFont->setFontColor(graphicsNS::GREEN);
 				VECTOR2 foo = VECTOR2(aliens_raw[i]->getPositionX()-10, aliens_raw[i]->getPositionY()+5);
@@ -542,7 +544,7 @@ void myGame::collisions()
 				if(sfxOn)audio->playCue("hit");
 				rocketCollision->setActive(false);
 				spits_raw[i]->setHealth(-1);
-				score += 80 ;
+				score += 200 ;
 				collisionVector = D3DXVECTOR2(0,0);
 				scoreFont->setFontColor(graphicsNS::GREEN);
 				VECTOR2 foo = VECTOR2(spits_raw[i]->getPositionX()-10, spits_raw[i]->getPositionY()+5);
@@ -582,7 +584,8 @@ void myGame::render()
 
 	std::stringstream ss ;
 	graphics->spriteBegin(); // begin drawing sprites
-
+	int cityMultiplier = 0;
+	
 	switch(gameStates)
 	{
 	case gameMenu:
@@ -622,20 +625,51 @@ void myGame::render()
 		//redOver.draw();
 		break;
 	case endGame:
+		backgroundImage2.draw();
 		backgroundImage.draw();
 		starImage.draw();
 		//TO DO add score tally at end
+		ss.str("");
+		ss.clear();
+		if(cities.getSize() > 0) dxFont->print("Nice work!", 70, 50);
+		else dxFont->print("You tried...", 70, 50);
 
-		
-		dxFont->print("Nice work!", 70, 100);
 		ss << nightCount;
-		dxFont->print("You made it " + ss.str() + " nights!",70,300);
+		if(nightCount > 1) dxFont->print("You made it " + ss.str() + " nights!",70,150);
+		else dxFont->print("You made it " + ss.str() + " night!",70,150);
+
+		ss.str("");
+		ss.clear();
+		if(endedGame == false) nightCount++;
+		ss << nightCount;
+		dxFont->print("\t+ 200 x " + ss.str(),70,200);
+
+		ss.str("");
+		ss.clear();
+		ss<<cities.getSize();
+		dxFont->print(ss.str() + " cities survived.",70,300);
+
+		ss.str("");
+		ss.clear();
+		cityMultiplier = cities.getSize();
+		ss << cityMultiplier;
+		dxFont->print("\t+ 100 x " + ss.str(),70,350);
+
+		if(endedGame == false) 
+		{
+			score+=cityMultiplier*100;
+			score+=nightCount*200;
+		}
+
+		ss.str("");
 		ss.clear();
 		ss << score;
-		dxFont->print("Final Score: " + ss.str(),70,200);
-		ss.clear();
-		dxFont->print("press <enter> to continue",70,400);
+		dxFont->print("Final Score: " + ss.str(),70,400);
 
+		ss.str("");
+		ss.clear();
+		dxFont->print("click to continue",70,450);
+		endedGame = true;
 		break;
 	case credits:
 		creditsImage.draw();

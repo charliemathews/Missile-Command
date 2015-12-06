@@ -72,6 +72,7 @@ private:
 	bool getMouseDepressedLast;
 	bool enterDepressedLastFrame;
 	int nightCount;
+	bool endedGame;
 	//text
 	std::stringstream buffer ;
 	//particles

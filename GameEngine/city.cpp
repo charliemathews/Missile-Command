@@ -9,7 +9,7 @@ City::City() : Entity()
 {
     spriteData.width = cityNS::WIDTH;           
     spriteData.height = cityNS::HEIGHT;
-	health = 100;
+	health = 4;
     spriteData.rect.bottom = cityNS::HEIGHT/2;    
     spriteData.rect.right = cityNS::WIDTH;
     velocity.x = 0;                             
