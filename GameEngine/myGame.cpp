@@ -268,6 +268,7 @@ void myGame::initialize(HWND hwnd)
 	enterDepressedLastFrame = false;
 	isNight = false;
 	isTutorial = true;
+	nightCount = 0;
 	audio->playCue("background");
 
 	srand(time(NULL));
@@ -321,29 +322,36 @@ void myGame::update()
 		
 		scrollBG();
 		
-		if(GetTickCount()-tickCounter >= GAME_END_TIME)
+		if(nightCount > 3)
 		{
 			gameStates = endGame;
 		}
 		
 		if(alienTimer < 8.00) alienTimer += frameTime;
-		else if(isNight)
+		else if(isNight && nightCount < 3)
 		{
-			int randNum = (rand() % 2)+1;
-			for(int i = 0; i < randNum; i++)
-			{
-				spawnAlien();
-			}
+			spawnAlien();
 			alienTimer = 0;
-
 		}
-		if(bolideTimer < 1.00) bolideTimer += frameTime ;
+		else if(isNight && nightCount == 3)
+		{
+				int randNum = (rand() % 3)+1;
+				for(int i = 0; i < randNum; i++)
+				{
+					spawnAlien();
+				}
+				alienTimer = 0;
+		}
+		
+		if(bolideTimer < 1.70) bolideTimer += frameTime ;
 		else
 		{
 			int randNum = (rand()%4)-1;
 			spawnBolide(VECTOR2(randNum*2*cityNS::WIDTH,0));
-			bolideTimer = 0 ;
+			if(isNight && nightCount != 3) bolideTimer = 0 ;
+			else bolideTimer = .7;
 		}
+
 		if(scoreFont->getFontColor()!=graphicsNS::WHITE)
 		{
 			if(scoreDispCounter < 1.00) scoreDispCounter += frameTime ;
@@ -372,6 +380,7 @@ void myGame::update()
 
 		//particles
 		pm.update(frameTime);
+
 		break;
 	case endGame:
 		
@@ -581,18 +590,6 @@ void myGame::render()
 		mAlien.draw();
 		break;
 	case gamePlay:
-		/*if(redOver.getVisible() == true)
-		{
-			graphics->get3Ddevice()->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-			graphics->get3Ddevice()->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-			graphics->get3Ddevice()->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
-			graphics->get3Ddevice()->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
-			
-		}
-		else graphics->get3Ddevice()->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);*/
-		
-		
-
 		backgroundImage2.draw();
 		backgroundImage.draw();
 		starImage.draw();
@@ -609,14 +606,15 @@ void myGame::render()
 		thePlayer.draw(thePlayer.getColorFilter());
 		rockets.draw();
 		crossHairImage.draw();
-		if(!isNight && isTutorial)
+
+		if(!isNight && nightCount == 0)
 		{
 			timer += frameTime;
-			if(timer <= 4.00)dxFont->print("Those darn llamas are back at it\n again tonight...\nCould you take care of it?", 100,100);
-			else if(timer <=9.00)
+			if(timer <= 4.00)dxFont->print("Those darn llamas are back at it\nagain tonight...\nCould you take care of it?", 100,100);
+			else if(timer <= 9.00)
 			{
 				dxFont->print("Click to fire your rockets\nto stop them before they take us out.\nOh, and deal with the asteroids too.", 100,100);
-				isTutorial = false;
+				
 			}
 			
 		}
@@ -628,8 +626,12 @@ void myGame::render()
 		starImage.draw();
 		//TO DO add score tally at end
 
+		
+		dxFont->print("Nice work!", 70, 100);
+		ss << nightCount;
+		dxFont->print("You made it " + ss.str() + " nights!",70,300);
+		ss.clear();
 		ss << score;
-		dxFont->print("You lasted the night!", 70, 100);
 		dxFont->print("Final Score: " + ss.str(),70,200);
 		ss.clear();
 		dxFont->print("press <enter> to continue",70,400);
@@ -709,18 +711,24 @@ void myGame::spawnAlien()
 
 	int spawn = rand()%(GAME_HEIGHT/3);
 
-	int choosePattern = rand() % 4;
+	int choosePattern = 0;
+	if(nightCount <= 1) choosePattern = 0;
+	else choosePattern = rand() % 4;
+
 	if( choosePattern == 1 || choosePattern == 3) alien->setX(-alien->getWidth());
 	else alien->setX(GAME_WIDTH);
+
 	alien->setY(spawn);
 
 	alien->setScale(1);
 	alien->setEdge(COLLISION_BOX_ALIEN);
 	
-	if(choosePattern == 1) aliens.add(alien, new Pattern(alienPattern3));
-	else if(choosePattern == 0)aliens.add(alien, new Pattern(alienPattern2));
+
+	if(choosePattern == 0)aliens.add(alien, new Pattern(alienPattern2));
+	else if(choosePattern == 1) aliens.add(alien, new Pattern(alienPattern3));
 	else if(choosePattern == 2)aliens.add(alien, new Pattern(alienPattern));
 	else if(choosePattern == 3)aliens.add(alien, new Pattern(alienPattern4));
+
 }
 
 
@@ -772,6 +780,7 @@ void myGame::scrollBG()
 	}
 	else if(backgroundImage2.getY() >= 1450)
 	{
+		if(isNight == true) nightCount++;
 		isNight = false;
 	}
 
@@ -783,7 +792,7 @@ void myGame::scrollBG()
 	}
 	if(backgroundImage2.getY() + backgroundImage2.getHeight() < 0) 
 	{
-		backgroundImage.setY(0);
+		backgroundImage.setY(-10);
 		backgroundImage2.setY(backgroundImage.getHeight()-10);
 
 	}

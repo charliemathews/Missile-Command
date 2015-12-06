@@ -71,6 +71,7 @@ private:
 	int tickCounter;
 	bool getMouseDepressedLast;
 	bool enterDepressedLastFrame;
+	int nightCount;
 	//text
 	std::stringstream buffer ;
 	//particles

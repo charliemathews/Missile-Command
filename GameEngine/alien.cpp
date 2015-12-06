@@ -67,13 +67,11 @@ void Alien::update(float frameTime)
 	int prevX = spriteData.x;
 	int prevY = spriteData.y;
 
-	//velocity.x = alienNS::SPEED_X * directionX ;
-	//velocity.y = alienNS::SPEED_Y * directionY ;
-
 	spriteData.x += frameTime * velocity.x ;
 	spriteData.y += frameTime * velocity.y ;
 
-	//incPosition(D3DXVECTOR2(velocity*frameTime));
+	if(spriteData.y <= 0) spriteData.y = prevY;
+
 	setPosition(VECTOR2(spriteData.x,spriteData.y));
 
 }
