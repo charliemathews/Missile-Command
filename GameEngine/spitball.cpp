@@ -65,16 +65,10 @@ void Spitball::update(float frameTime)
 	int prevX = spriteData.x;
 	int prevY = spriteData.y;
 	
-	VECTOR2 bulletLoc(spriteData.x,spriteData.y);
-	////bulletLoc.x = startPos.x + spitballNS::SPEED_X* frameTime * dir.x;
-	////bulletLoc.y = startPos.y + spitballNS::SPEED_Y* frameTime * dir.y;
-	bulletLoc.x += velocity.x;
-	bulletLoc.y += velocity.y;
 
-	spriteData.x = bulletLoc.x ;
-	spriteData.y = bulletLoc.y ;
+	spriteData.x += velocity.x ;
+	spriteData.y += velocity.y ;
 
-	//incPosition(D3DXVECTOR2(velocity*frameTime));
 	setPosition(VECTOR2(spriteData.x,spriteData.y));
 
 	if(getX() <= 0) velocity.x*=-1;

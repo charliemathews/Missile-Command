@@ -350,7 +350,7 @@ void myGame::update()
 		{
 			int randNum = (rand()%4)-1;
 			spawnBolide(VECTOR2(randNum*2*cityNS::WIDTH,0));
-			if(isNight && nightCount != 3) bolideTimer = 0 ;
+			if(isNight && nightCount != 3) bolideTimer = -.5 ;
 			else bolideTimer = .7;
 		}
 
@@ -526,6 +526,8 @@ void myGame::collisions()
 			rocketCollision == NULL ;
 		}
 		}
+		if(aliens_size > 1)
+		{
 		for(int i = 0; i < aliens_size; ++i)
 		{
 			alienCollision = (Alien*)aliens.checkCollision(aliens_raw[i], collisionVector) ;
@@ -535,6 +537,7 @@ void myGame::collisions()
 				collisionVector = D3DXVECTOR2(0,0);
 			}
 			alienCollision == NULL ;
+		}
 		}
 	}
 

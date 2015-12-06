@@ -74,6 +74,12 @@ void Alien::update(float frameTime)
 
 	setPosition(VECTOR2(spriteData.x,spriteData.y));
 
+	if(getX() <= -100 || getX() >= GAME_WIDTH + 100)
+	{
+		setHealth(-1) ;
+	}
+
+
 }
 
 
