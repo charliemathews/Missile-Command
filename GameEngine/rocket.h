@@ -94,6 +94,9 @@ public:
 	{
 		aliveTime = GetTickCount();
 	}
+
+	VECTOR2 getDir(){return dir;}
+	
 };
 #endif
 

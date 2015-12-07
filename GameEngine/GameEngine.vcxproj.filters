@@ -99,6 +99,9 @@
     <ClCompile Include="particleManager.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
+    <ClCompile Include="explosion.cpp">
+      <Filter>Source Files\Entities\Projectiles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="myGame.h">
@@ -169,6 +172,9 @@
     </ClInclude>
     <ClInclude Include="particleManager.h">
       <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="explosion.h">
+      <Filter>Header Files\Entities\Projectiles</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

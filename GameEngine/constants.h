@@ -101,8 +101,10 @@ const RECT	COLLISION_BOX_CITY = {-28,-30,28,30};
 const RECT	COLLISION_BOX_PLAYER = {-32,-42,32,42};
 const RECT	COLLISION_BOX_ROCKET = {-3,-22,3,22};
 const RECT	COLLISION_BOX_SPIT = {-16,-11,16,11};
-const RECT	COLLISION_BOX_ASTEROID = {-30,-30,30,30};
+const RECT	COLLISION_BOX_ASTEROID = {-14,-20,14,20};
+const RECT	COLLISION_BOX_EXP = {-30,-30,30,30};
 const RECT	NO_COL_BOX = {0,0,0,0};
+
 // image file names
 const char ALIEN_IMAGE[] = "pictures\\alien1.png" ;
 const char ROCKET_IMAGE[] = "pictures\\rocket.png" ;
@@ -117,6 +119,7 @@ const char SPIT_IMAGE[] = "pictures\\spitball.png";
 const char ASTEROID_IMAGE[] = "pictures\\asteroid.png";
 const char CROSS_IMAGE[] = "pictures\\crosshair6.png";
 const char DUST_IMAGE[] = "pictures\\dust.png";
+const char EXPLOSION_IMAGE[] = "pictures\\explosion.png";
 // key mappings
 const UCHAR ESC_KEY      = VK_ESCAPE;       // escape key
 const UCHAR ALT_KEY      = VK_MENU;         // Alt key

@@ -36,6 +36,7 @@ class myGame;
 #include "spitball.h"
 #include "rocket.h"
 #include "particleManager.h"
+#include "explosion.h"
 
 //=============================================================================
 // This class is the core of the game
@@ -43,7 +44,7 @@ class myGame;
 class myGame : public Game
 {
 private:
-	TextureManager alienTM, rocketTM,bolideTM,cityTM,playerTM, spitTM ;
+	TextureManager alienTM, rocketTM,bolideTM,cityTM,playerTM, spitTM, explosionTM ;
 	TextureManager backgroundTM, background2TM,starsTM,creditsTM,instructTM,crossHairTM;
 
 	Image backgroundImage, backgroundImage2, starImage, creditsImage, instructImage, crossHairImage, rocketsRemaining[MAX_ROCKETS];
@@ -64,6 +65,7 @@ private:
 	EntityManager bolides ;
 	EntityManager cities ;
 	EntityManager spits ;
+	EntityManager explosions ;
 
 	int score ;
 	float timer ;
@@ -110,6 +112,7 @@ public:
 	void setSFX(){sfxOn = !sfxOn;}
 	void fireRocket();
 	void spawnAlien();
+	void makeExplosion(VECTOR2 source);
 	void fireSpitball(VECTOR2 source);
 	void createParticleEffect(VECTOR2 pos, VECTOR2 vel, int numParticles);
 	void addHighScores(int newScore);

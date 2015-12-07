@@ -273,6 +273,11 @@ void myGame::initialize(HWND hwnd)
 
 	cities.add(newCity3);
 
+	//explosions
+	if (!explosionTM.initialize(graphics,EXPLOSION_IMAGE))
+		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing explosion texture"));
+
+
 	//initiialize font
 	dxFont = new TextDX();
 	if(dxFont->initialize(graphics, 25, true, false, "Retro Computer") == false)
@@ -318,6 +323,8 @@ void myGame::update()
 
 
 	City** cities_raw = (City**)cities.getArray();
+	Explosion** exp_raw = (Explosion**)explosions.getArray();
+	Rocket** rockets_raw = (Rocket**)rockets.getArray();
 	VECTOR2 vel;
 	VECTOR2* foo;
 
@@ -347,13 +354,46 @@ void myGame::update()
 	case gamePlay:
 
 		ShowCursor(false);
+		for(int i = 0; i < explosions.getSize(); ++i)
+		{
+			if(exp_raw[i]->getAnimationComplete()) exp_raw[i]->setHealth(-1);
+		}
+		//for(int i = 0; i < rockets.getSize(); ++i)
+		//{
+		//	if(rockets_raw[i]->getDir() > 0)
+		//	{
+		//		if(rockets_raw[i]->getSpriteData().x >= rockets_raw[i]->getTarget().x && rockets_raw[i]->getSpriteData().y <= rockets_raw[i]->getTarget().y)
+		//		{
+		//			makeExplosion(VECTOR2(rockets_raw[i]->getTarget().x-explosionNS::WIDTH/2,rockets_raw[i]->getTarget().y - explosionNS::HEIGHT/2));
+		//			rockets_raw[i]->setVelocity(VECTOR2(0,0));
+		//			rockets_raw[i]->setInvisible();
+		//			rockets_raw[i]->setActive(false);
+		//			rockets_raw[i]->setHealth(-1);
+		//		}
+		//	}
+		//	else if(rockets_raw[i]->getDir() <= 0)
+		//	{
+		//			if(rockets_raw[i]->getSpriteData().x <= rockets_raw[i]->getTarget().x && rockets_raw[i]->getSpriteData().y <= rockets_raw[i]->getTarget().y)
+		//			{
+		//				makeExplosion(VECTOR2(rockets_raw[i]->getTarget().x-explosionNS::WIDTH/2,rockets_raw[i]->getTarget().y - explosionNS::HEIGHT/2));
+		//				rockets_raw[i]->setVelocity(VECTOR2(0,0));
+		//				rockets_raw[i]->setInvisible();
+		//				rockets_raw[i]->setActive(false);
+		//				rockets_raw[i]->setHealth(-1);
+		//			}
+		//	}
+		//	//if(rockets_raw[i]->getVelocity().x == 0) makeExplosion(rockets_raw[i]->getPosition());
+		//}
+		
+
 		if(input->getMouseLButton())getMouseDepressedLast = true;
 		if(!input->getMouseLButton()&&getMouseDepressedLast)
 		{
 			getMouseDepressedLast = false;
 			if(rockets.getSize() < MAX_ROCKETS) fireRocket();
 		}
-
+			
+	
 		scrollBG();
 		numCities = 0;
 		for(int i = 0; i < cities.getSize(); i++)
@@ -410,13 +450,16 @@ void myGame::update()
 				scoreDispCounter = 0;
 			}
 		}
+
+	
+
 		aliens.update(frameTime);
 		cities.update(frameTime);
 		thePlayer.update(frameTime);
 		rockets.update(frameTime);
 		bolides.update(frameTime);
 		spits.update(frameTime);
-
+		explosions.update(frameTime);
 		//
 		crossHairImage.setX(input->getMouseX() - crossHairImage.getWidth()/3);
 		crossHairImage.setY(input->getMouseY() - crossHairImage.getHeight()/2);
@@ -427,6 +470,9 @@ void myGame::update()
 			rocketsRemaining[index - 1].setVisible(false);
 		for (int i = index - 1; i >= 0; i--)
 			rocketsRemaining[i].setVisible(true);
+
+
+
 
 		//particles
 		pm.update(frameTime);
@@ -504,7 +550,7 @@ void myGame::collisions()
 		int rockets_size	= rockets.getSize();
 		int aliens_size		= aliens.getSize();
 		int cities_size		= cities.getSize();
-
+		int explosions_size = explosions.getSize();
 
 		Bolide** bolides_raw = (Bolide**)bolides.getArray();
 
@@ -514,6 +560,7 @@ void myGame::collisions()
 		City* cityCollision ;
 		Spitball* spitCollision ;
 		Alien* alienCollision;
+		Explosion* expCollision;
 
 		for(int i = 0; i < bolides_size; ++i)
 		{
@@ -538,11 +585,29 @@ void myGame::collisions()
 					VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (50 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
 					createParticleEffect(foo, bar, 10);
 					collisionVector = D3DXVECTOR2(0,0);
-
+					makeExplosion(VECTOR2(rocketCollision->getX()-explosionNS::WIDTH/2,rocketCollision->getY()-explosionNS::HEIGHT/2));
 					scoreFont->setFontColor(graphicsNS::GREEN);
 
 				}
 				rocketCollision == NULL ;
+			}
+			if(explosions_size > 0)
+			{
+				expCollision = (Explosion*)explosions.checkCollision(bolides_raw[i], collisionVector) ;
+				if(expCollision != NULL)
+				{
+					if(sfxOn)audio->playCue("hit");
+					expCollision->setActive(false);
+					bolides_raw[i]->setHealth(-1);
+					score += 100 ;
+					VECTOR2 foo = VECTOR2(bolides_raw[i]->getPositionX()-10, bolides_raw[i]->getPositionY()+5);
+					VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (50 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
+					createParticleEffect(foo, bar, 10);
+					collisionVector = D3DXVECTOR2(0,0);
+					scoreFont->setFontColor(graphicsNS::GREEN);
+
+				}
+				expCollision == NULL ;
 			}
 
 			cityCollision = (City*)cities.checkCollision(bolides_raw[i], collisionVector) ;
@@ -587,6 +652,7 @@ void myGame::collisions()
 						VECTOR2 foo = VECTOR2(aliens_raw[i]->getPositionX()-10, aliens_raw[i]->getPositionY()+5);
 						VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (40 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (40)) + 0);
 						createParticleEffect(foo, bar, 25);
+						makeExplosion(VECTOR2(rocketCollision->getX()-explosionNS::WIDTH/2,rocketCollision->getY()-explosionNS::HEIGHT/2));
 					}
 					rocketCollision == NULL ;
 				}
@@ -602,6 +668,27 @@ void myGame::collisions()
 						collisionVector = D3DXVECTOR2(0,0);
 					}
 					alienCollision == NULL ;
+				}
+				for(int i = 0; i < aliens_size; ++i)
+				{
+				if(explosions_size > 0)
+				{
+					expCollision = (Explosion*)explosions.checkCollision(aliens_raw[i], collisionVector) ;
+					if(expCollision != NULL)
+					{
+						if(sfxOn)audio->playCue("hit");
+						expCollision->setActive(false);
+						aliens_raw[i]->setHealth(-1);
+						score += 100 ;
+						VECTOR2 foo = VECTOR2(aliens_raw[i]->getPositionX()-10, aliens_raw[i]->getPositionY()+5);
+						VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (50 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
+						createParticleEffect(foo, bar, 10);
+						collisionVector = D3DXVECTOR2(0,0);
+						scoreFont->setFontColor(graphicsNS::GREEN);
+
+					}
+					expCollision == NULL ;
+				}
 				}
 			}
 		}
@@ -625,6 +712,7 @@ void myGame::collisions()
 					VECTOR2 foo = VECTOR2(spits_raw[i]->getPositionX()-10, spits_raw[i]->getPositionY()+5);
 					VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (40 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (40)) + 0);
 					createParticleEffect(foo, bar, 25);
+					makeExplosion(VECTOR2(rocketCollision->getX()-explosionNS::WIDTH/2,rocketCollision->getY()-explosionNS::HEIGHT/2));
 				}
 				rocketCollision == NULL ;
 
@@ -648,6 +736,24 @@ void myGame::collisions()
 				}
 
 				cityCollision == NULL ;
+				if(explosions_size > 0)
+				{
+					expCollision = (Explosion*)explosions.checkCollision(spits_raw[i], collisionVector) ;
+					if(expCollision != NULL)
+					{
+						if(sfxOn)audio->playCue("hit");
+						expCollision->setActive(false);
+						spits_raw[i]->setHealth(-1);
+						score += 100 ;
+						VECTOR2 foo = VECTOR2(spits_raw[i]->getPositionX()-10, spits_raw[i]->getPositionY()+5);
+						VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (50 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
+						createParticleEffect(foo, bar, 10);
+						collisionVector = D3DXVECTOR2(0,0);
+						scoreFont->setFontColor(graphicsNS::GREEN);
+
+					}
+					expCollision == NULL ;
+				}
 			}
 		}
 	}
@@ -687,7 +793,7 @@ void myGame::render()
 		pm.draw();
 		rockets.draw();
 		thePlayer.draw(thePlayer.getColorFilter());
-
+		explosions.draw();
 		crossHairImage.draw();
 
 		if(!isNight && nightCount == 0)
@@ -997,6 +1103,31 @@ void myGame::fireSpitball(VECTOR2 source)
 	spits.add(newSpitball);
 	if(sfxOn)audio->playCue("shoot");
 }
+
+
+void myGame::makeExplosion(VECTOR2 source)
+{
+	Explosion* newExplosion = new Explosion();
+
+	if (!newExplosion->initialize(this, explosionNS::WIDTH, explosionNS::HEIGHT,3, &explosionTM))
+		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing explosion entity"));
+
+	newExplosion->setX(source.x);
+	newExplosion->setY(source.y);
+	newExplosion->setEdge(COLLISION_BOX_EXP);
+	
+	newExplosion->setVisible();
+	newExplosion->setActive(true);
+
+	newExplosion->setFrames(0,3);
+	newExplosion->setCurrentFrame(0);
+	newExplosion->setFrameDelay(0.2f);
+
+	explosions.add(newExplosion);
+
+	//if(sfxOn)audio->playCue("shoot");
+}
+
 
 void myGame::createParticleEffect(VECTOR2 pos, VECTOR2 vel, int numParticles){
 

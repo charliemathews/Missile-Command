@@ -62,29 +62,29 @@ void Rocket::update(float frameTime)
 
 	//incPosition(D3DXVECTOR2(velocity*frameTime));
 	setPosition(VECTOR2(spriteData.x,spriteData.y));
-	if(dir.x > 0)
-	{
-		if(spriteData.x >= coords.x && spriteData.y <= coords.y)
-		{
-			velocity.x = 0;
-			velocity.y = 0;	
-			setInvisible();
-			setActive(false);
+	//if(dir.x > 0)
+	//{
+	//	if(spriteData.x >= coords.x && spriteData.y <= coords.y)
+	//	{
+	//		velocity.x = 0;
+	//		velocity.y = 0;	
+	//		setInvisible();
+	//		setActive(false);
+	//		setHealth(-1);
+	//	}
+	//}
+	//else if( dir.x <=0)
+	//{
+	//	if(spriteData.x <= coords.x && spriteData.y <= coords.y)
+	//	{
+	//		velocity.x = 0;
+	//		velocity.y = 0;
+	//		setInvisible();
+	//		setActive(false);
+	//		setHealth(-1);
 
-		}
-	}
-	else if( dir.x <=0)
-	{
-		if(spriteData.x <= coords.x && spriteData.y <= coords.y)
-		{
-			velocity.x = 0;
-			velocity.y = 0;
-			setInvisible();
-			setActive(false);
-
-
-		}
-	}
+	//	}
+	//}
 
 	//If the rocket goes off the screen
 	if (spriteData.x < 0 || spriteData.x > GAME_WIDTH || spriteData.y > GAME_HEIGHT || spriteData.y < 0)
@@ -93,6 +93,7 @@ void Rocket::update(float frameTime)
 		velocity.y = 0;
 		setInvisible();
 		setActive(false);
+		setHealth(-1);
 	}
 
 
