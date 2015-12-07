@@ -65,7 +65,6 @@ void City::update(float frameTime)
 		setEdge(NO_COL_BOX);
 		setCurrentFrame(3);
 	}
-	//incPosition(D3DXVECTOR2(velocity*frameTime));
 	setPosition(VECTOR2(spriteData.x,spriteData.y));
 }
 

@@ -206,11 +206,15 @@ void myGame::initialize(HWND hwnd)
 
 
 	//menu screen alien
-	if (!mAlien.initialize(this, alienNS::WIDTH, alienNS::HEIGHT, 1, &alienTM))
+	if (!mAlien.initialize(this, alienNS::WIDTH, alienNS::HEIGHT, 2, &alienTM))
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing menu alien image"));
-	mAlien.setVelocity(VECTOR2(200,150));
+	mAlien.setVelocity(VECTOR2(200,200));
 	mAlien.setX(rand()%GAME_WIDTH);
 	mAlien.setY(rand()%GAME_HEIGHT);
+	mAlien.setFrames(0,2);
+	mAlien.setCurrentFrame(0);
+	mAlien.setFrameDelay(0.8f);
+	
 	//player
 	if (!playerTM.initialize(graphics,PLAYER_IMAGE))
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing player texture"));
@@ -353,8 +357,17 @@ void myGame::update()
 		if(lineOpt == 3) gameStates = credits;
 		if(lineOpt == 4) gameStates = highScore;
 		//lil menu alien
-		//mAlien.update(frameTime);
-
+		
+		/*mAlien.update(frameTime);
+		if(mAlien.getX() >= GAME_WIDTH) mAlien.setX(0-mAlien.getWidth());
+		else if(mAlien.getX() < 0-mAlien.getWidth())  mAlien.setX(GAME_WIDTH-20);
+		if(mAlien.getY() >= GAME_HEIGHT) mAlien.setY(1);
+		else if(mAlien.getY() < 0) mAlien.setY(GAME_HEIGHT-20);
+		mAlien.update(frameTime);*/
+		mAlien.update(frameTime);
+		vel = mAlien.getPosition() - VECTOR2(input->getMouseX(),input->getMouseY());		if(vel.x == 0 && vel.y == 0) return ;
+		foo = D3DXVec2Normalize(&vel, &vel);
+		mAlien.setVelocity(200*-vel);
 		break;
 	case gamePlay:
 
