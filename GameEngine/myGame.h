@@ -116,6 +116,7 @@ public:
 	void fireSpitball(VECTOR2 source);
 	void createParticleEffect(VECTOR2 pos, VECTOR2 vel, int numParticles);
 	void addHighScores(int newScore);
+	void restartGame();
 };
 
 #endif

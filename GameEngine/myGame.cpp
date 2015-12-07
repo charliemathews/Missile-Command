@@ -488,10 +488,7 @@ void myGame::update()
 		if(input->getMouseLButton()) enterDepressedLastFrame = true;
 		if (!input->getMouseLButton() && enterDepressedLastFrame)
 		{
-
-
-			audio->stopCue("background");
-			myGame::initialize(hwnd);
+			restartGame();
 			gameStates = credits;
 			enterDepressedLastFrame = false;
 		}
@@ -921,6 +918,7 @@ void myGame::releaseAll()
 	explosionTM.onLostDevice();
 	menubTM.onLostDevice();
 
+	explosions.clear();
 	rockets.clear();
 	cities.clear();
 	bolides.clear();
@@ -1166,4 +1164,18 @@ void myGame::addHighScores(int newScore)
 	{
 		topTenScores[i] = allScores[i];
 	}
+}
+
+void myGame::restartGame()
+{
+	rockets.clear();
+	cities.clear();
+	bolides.clear();
+	aliens.clear();
+	spits.clear();
+	explosions.clear();
+	audio->stopCue("background");
+	resetAll();
+
+	initialize(hwnd);
 }
