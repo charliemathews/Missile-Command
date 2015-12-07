@@ -145,7 +145,11 @@ void myGame::initialize(HWND hwnd)
 
 	//particles
 	pm.initialize(graphics);
-
+	//menu background
+	if(!menubTM.initialize(graphics,MENU_IMAGE))
+		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing background texture"));
+	if (!menub.initialize(graphics,0,0,1, &menubTM))
+		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing background image"));
 	//
 	if(!backgroundTM.initialize(graphics,STARBACK_IMAGE))
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing background texture"));
@@ -774,6 +778,7 @@ void myGame::render()
 	switch(gameStates)
 	{
 	case gameMenu:
+		menub.draw();
 		menu->displayMenu();
 		mAlien.draw();
 		break;
@@ -870,17 +875,18 @@ void myGame::render()
 		instructImage.draw();
 		break;
 	case highScore:
+		menub.draw();
 		starImage.draw();
 
 		dxFont->setFontColor(graphicsNS::WHITE);
-		dxFont->print("High Scores", GAME_WIDTH/2 - 80, GAME_HEIGHT/8);
+		dxFont->print("High Scores", 50, GAME_HEIGHT/8);
 
 		for (int i = 0; i < MAX_SCORES_DISPLAYED; i++)
 		{
 			if (topTenScores[i] == INT_MIN)
 			{
 				if (i == 0)
-					dxFont->print("No one has beaten the Llamas yet!", GAME_WIDTH/3 - 40, GAME_HEIGHT/3);
+					dxFont->print("No one has beaten the Llamas yet!", 50, 200);
 
 				break;
 			}
@@ -912,6 +918,8 @@ void myGame::releaseAll()
 	playerTM.onLostDevice();
 	spitTM.onLostDevice();
 	crossHairTM.onLostDevice();
+	explosionTM.onLostDevice();
+	menubTM.onLostDevice();
 
 	rockets.clear();
 	cities.clear();
@@ -942,6 +950,8 @@ void myGame::resetAll()
 	playerTM.onResetDevice();
 	spitTM.onResetDevice();
 	crossHairTM.onResetDevice();
+	explosionTM.onResetDevice();
+	menubTM.onResetDevice();
 	Game::resetAll();
 	return;
 }

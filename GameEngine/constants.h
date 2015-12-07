@@ -120,6 +120,7 @@ const char ASTEROID_IMAGE[] = "pictures\\asteroid.png";
 const char CROSS_IMAGE[] = "pictures\\crosshair6.png";
 const char DUST_IMAGE[] = "pictures\\dust.png";
 const char EXPLOSION_IMAGE[] = "pictures\\explosion.png";
+const char MENU_IMAGE[] = "pictures\\star1.png";
 // key mappings
 const UCHAR ESC_KEY      = VK_ESCAPE;       // escape key
 const UCHAR ALT_KEY      = VK_MENU;         // Alt key

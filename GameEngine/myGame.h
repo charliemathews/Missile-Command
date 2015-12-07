@@ -45,9 +45,9 @@ class myGame : public Game
 {
 private:
 	TextureManager alienTM, rocketTM,bolideTM,cityTM,playerTM, spitTM, explosionTM ;
-	TextureManager backgroundTM, background2TM,starsTM,creditsTM,instructTM,crossHairTM;
+	TextureManager menubTM, backgroundTM, background2TM,starsTM,creditsTM,instructTM,crossHairTM;
 
-	Image backgroundImage, backgroundImage2, starImage, creditsImage, instructImage, crossHairImage, rocketsRemaining[MAX_ROCKETS];
+	Image menub, backgroundImage, backgroundImage2, starImage, creditsImage, instructImage, crossHairImage, rocketsRemaining[MAX_ROCKETS];
 	VECTOR2 collisionVector ;
 
 	GameStates gameStates ;
