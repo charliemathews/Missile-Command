@@ -788,7 +788,7 @@ void myGame::resetAll()
 void myGame::spawnAlien()
 {
 	Alien* alien = new Alien();
-	if (!alien->initialize(this, alienNS::WIDTH, alienNS::HEIGHT, 1, &alienTM))
+	if (!alien->initialize(this, alienNS::WIDTH, alienNS::HEIGHT, 2, &alienTM))
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing alien entity"));
 
 	int spawn = rand()%(GAME_HEIGHT/3);
@@ -804,7 +804,9 @@ void myGame::spawnAlien()
 
 	alien->setScale(1);
 	alien->setEdge(COLLISION_BOX_ALIEN);
-	
+	alien->setFrames(0,2);
+	alien->setCurrentFrame(0);
+	alien->setFrameDelay(0.8f);
 
 	if(choosePattern == 0)aliens.add(alien, new Pattern(alienPattern2));
 	else if(choosePattern == 1) aliens.add(alien, new Pattern(alienPattern3));
