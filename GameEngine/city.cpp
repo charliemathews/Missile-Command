@@ -72,6 +72,6 @@ void City::update(float frameTime)
 
 void City::damage(int weapon)
 {
-	health -= 4 * weapon;
+	health -=  weapon;
 }
 
