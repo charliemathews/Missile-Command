@@ -431,7 +431,7 @@ void myGame::update()
 			alienTimer = 0;
 		}
 
-		if(bolideTimer < 1.70) bolideTimer += frameTime ;
+		if(bolideTimer < 1.90) bolideTimer += frameTime ;
 		else
 		{
 			int randNum = (rand()%4)-1;
@@ -586,7 +586,7 @@ void myGame::collisions()
 					VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (50 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
 					createParticleEffect(foo, bar, 10);
 					collisionVector = D3DXVECTOR2(0,0);
-					makeExplosion(VECTOR2(rocketCollision->getX()-explosionNS::WIDTH/2,rocketCollision->getY()-explosionNS::HEIGHT/2));
+					makeExplosion(VECTOR2(rocketCollision->getX()-explosionNS::WIDTH/4,rocketCollision->getY()-explosionNS::HEIGHT/2));
 					scoreFont->setFontColor(graphicsNS::GREEN);
 
 				}
@@ -653,7 +653,7 @@ void myGame::collisions()
 						VECTOR2 foo = VECTOR2(aliens_raw[i]->getPositionX()-10, aliens_raw[i]->getPositionY()+5);
 						VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (40 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (40)) + 0);
 						createParticleEffect(foo, bar, 25);
-						makeExplosion(VECTOR2(rocketCollision->getX()-explosionNS::WIDTH/2,rocketCollision->getY()-explosionNS::HEIGHT/2));
+						makeExplosion(VECTOR2(rocketCollision->getX()-explosionNS::WIDTH/4,rocketCollision->getY()-explosionNS::HEIGHT/2));
 					}
 					rocketCollision == NULL ;
 				}
@@ -713,7 +713,7 @@ void myGame::collisions()
 					VECTOR2 foo = VECTOR2(spits_raw[i]->getPositionX()-10, spits_raw[i]->getPositionY()+5);
 					VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (40 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (40)) + 0);
 					createParticleEffect(foo, bar, 25);
-					makeExplosion(VECTOR2(rocketCollision->getX()-explosionNS::WIDTH/2,rocketCollision->getY()-explosionNS::HEIGHT/2));
+					makeExplosion(VECTOR2(rocketCollision->getX()-explosionNS::WIDTH/4,rocketCollision->getY()-explosionNS::HEIGHT/2));
 				}
 				rocketCollision == NULL ;
 
@@ -798,6 +798,7 @@ void myGame::render()
 		explosions.draw();
 		crossHairImage.draw();
 
+		if(isNight) timer = 0;
 		if(!isNight && nightCount == 0)
 		{
 			timer += frameTime;
@@ -809,7 +810,16 @@ void myGame::render()
 			}
 
 		}
-
+		if(!isNight && nightCount == 1)
+		{
+			timer += frameTime;
+			if(timer <= 4.00)	dxFont->print("See? That wasn't so bad.", 100,100);
+		}
+		if(!isNight && nightCount == 2)
+		{
+			timer += frameTime;
+			if(timer<=4.00 )dxFont->print("You're almost there!", 100,100);
+		}
 		for (int i = 0; i < MAX_ROCKETS; i++)
 			rocketsRemaining[i].draw();
 
@@ -1133,7 +1143,7 @@ void myGame::makeExplosion(VECTOR2 source)
 
 	explosions.add(newExplosion);
 
-	//if(sfxOn)audio->playCue("shoot");
+	if(sfxOn)audio->playCue("shoot");
 }
 
 
