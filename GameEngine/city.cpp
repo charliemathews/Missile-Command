@@ -57,11 +57,13 @@ void City::update(float frameTime)
 	Entity::update(frameTime);
 	int prevX = spriteData.x;
 	int prevY = spriteData.y;
-
+	if(health == 3) setCurrentFrame(1);
+	else if(health == 2) setCurrentFrame(2);
 	if(health <= 0) 
 	{
 		alive = false;
-		setInvisible();
+		setEdge(NO_COL_BOX);
+		setCurrentFrame(3);
 	}
 	//incPosition(D3DXVECTOR2(velocity*frameTime));
 	setPosition(VECTOR2(spriteData.x,spriteData.y));

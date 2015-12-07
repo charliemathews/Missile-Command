@@ -203,43 +203,55 @@ void myGame::initialize(HWND hwnd)
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing city texture"));
 
 	City* newCity = new City();
-	if (!newCity->initialize(this, cityNS::WIDTH, cityNS::HEIGHT, 1, &cityTM))
+	if (!newCity->initialize(this, cityNS::WIDTH, cityNS::HEIGHT, 2, &cityTM))
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing city entity"));
 
 	newCity->setEdge(COLLISION_BOX_CITY);
 	newCity->setScale(1);
 	newCity->setY(GAME_HEIGHT - newCity->getHeight());
 	newCity->setX(80);
+
+	newCity->setCurrentFrame(0);
+
 	cities.add(newCity);
 
 	City* newCity1 = new City();
-	if (!newCity1->initialize(this, cityNS::WIDTH, cityNS::HEIGHT, 1, &cityTM))
+	if (!newCity1->initialize(this, cityNS::WIDTH, cityNS::HEIGHT, 2, &cityTM))
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing city entity"));
 
 	newCity1->setEdge(COLLISION_BOX_CITY);
 	newCity1->setScale(1);
 	newCity1->setY(GAME_HEIGHT - newCity->getHeight());
 	newCity1->setX(newCity->getX() + newCity->getWidth() + 80);
+
+	newCity1->setCurrentFrame(0);
+
 	cities.add(newCity1);
 
 	City* newCity2 = new City();
-	if (!newCity2->initialize(this, cityNS::WIDTH, cityNS::HEIGHT, 1, &cityTM))
+	if (!newCity2->initialize(this, cityNS::WIDTH, cityNS::HEIGHT, 2, &cityTM))
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing city entity"));
 
 	newCity2->setEdge(COLLISION_BOX_CITY);
 	newCity2->setScale(1);
 	newCity2->setY(GAME_HEIGHT - newCity->getHeight());
 	newCity2->setX(GAME_WIDTH - 80 - newCity->getWidth());
+
+	newCity2->setCurrentFrame(0);
+
 	cities.add(newCity2);
 
 	City* newCity3 = new City();
-	if (!newCity3->initialize(this, cityNS::WIDTH, cityNS::HEIGHT, 1, &cityTM))
+	if (!newCity3->initialize(this, cityNS::WIDTH, cityNS::HEIGHT, 2, &cityTM))
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing city entity"));
 
 	newCity3->setEdge(COLLISION_BOX_CITY);
 	newCity3->setScale(1);
 	newCity3->setY(GAME_HEIGHT - newCity->getHeight());
 	newCity3->setX(newCity2->getX() - newCity->getWidth() - 80);
+
+	newCity3->setCurrentFrame(0);
+
 	cities.add(newCity3);
 
 	//initiialize font
@@ -270,6 +282,7 @@ void myGame::initialize(HWND hwnd)
 	isTutorial = true;
 	nightCount = 0;
 	endedGame = false;
+	numCities = 0;
 	audio->playCue("background");
 
 	srand(time(NULL));
@@ -284,7 +297,8 @@ void myGame::update()
 {
 	int lineOpt = 0;
 
-
+	
+		City** cities_raw = (City**)cities.getArray();
 	VECTOR2 vel;
 	VECTOR2* foo;
 
@@ -318,16 +332,25 @@ void myGame::update()
 		if(!input->getMouseLButton()&&getMouseDepressedLast)
 		{
 			getMouseDepressedLast = false;
-			fireRocket();
+			if(rockets.getSize() < 6) fireRocket();
 		}
 		
 		scrollBG();
-		
+		numCities = 0;
+		for(int i = 0; i < cities.getSize(); i++)
+		{
+			if(cities_raw[i]->getHealth() > 0) numCities++;
+		}
 		if(nightCount >= 3 && backgroundImage.getY() <= -740)
 		{
+
 			gameStates = endGame;
 		}
-		if(cities.getSize() == 0) gameStates = endGame;
+		if(numCities == 0)
+		{
+		
+			gameStates = endGame;
+		}
 		
 		if(alienTimer < 8.00) alienTimer += frameTime;
 		else if(isNight && nightCount < 3)
@@ -389,6 +412,8 @@ void myGame::update()
 		if(input->getMouseLButton()) enterDepressedLastFrame = true;
 		if (!input->getMouseLButton() && enterDepressedLastFrame)
 		{
+
+
 			audio->stopCue("background");
 			myGame::initialize(hwnd);
 			gameStates = credits;
@@ -488,16 +513,21 @@ void myGame::collisions()
 		cityCollision = (City*)cities.checkCollision(bolides_raw[i], collisionVector) ;
 		if(cityCollision != NULL)
 		{
+			if(cityCollision->getHealth() > 0)
+			{
 			if(sfxOn)audio->playCue("explosion");
 			cityCollision->damage(1);
 			bolides_raw[i]->setHealth(-1);
 			score -= 100 ;
+			scoreFont->setFontColor(graphicsNS::RED);
+			cityCollision->setColorFilter(graphicsNS::RED);
 			collisionVector = D3DXVECTOR2(0,0);
 			VECTOR2 foo = VECTOR2(bolides_raw[i]->getPositionX()-10, bolides_raw[i]->getPositionY()+5);
 			VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (20 - 10)) -10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
 			createParticleEffect(foo, VECTOR2(bar.x,-10), 10);
-			scoreFont->setFontColor(graphicsNS::RED);
-			cityCollision->setColorFilter(graphicsNS::RED);
+			}
+			
+			
 		}
 		cityCollision == NULL ;
 	}
@@ -564,18 +594,22 @@ void myGame::collisions()
 			rocketCollision == NULL ;
 
 			cityCollision = (City*)cities.checkCollision(spits_raw[i], collisionVector) ;
-			if(cityCollision != NULL)
+			if(cityCollision != NULL )
 			{
-				if(sfxOn)audio->playCue("explosion");
-				cityCollision->damage(1);
-				spits_raw[i]->setHealth(-1);
-				score -= 200 ;
-				collisionVector = D3DXVECTOR2(0,0);
-				scoreFont->setFontColor(graphicsNS::RED);
-				cityCollision->setColorFilter(graphicsNS::RED);
-				VECTOR2 foo = VECTOR2(spits_raw[i]->getPositionX()-10, spits_raw[i]->getPositionY()+5);
-				VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (40 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (40)) + 0);
-				createParticleEffect(foo, bar, 25);
+				if(cityCollision->getHealth() > 0)
+				{
+					if(sfxOn)audio->playCue("explosion");
+					cityCollision->damage(1);
+					spits_raw[i]->setHealth(-1);
+					score -= 200 ;
+					scoreFont->setFontColor(graphicsNS::RED);
+					cityCollision->setColorFilter(graphicsNS::RED);
+					collisionVector = D3DXVECTOR2(0,0);
+					VECTOR2 foo = VECTOR2(spits_raw[i]->getPositionX()-10, spits_raw[i]->getPositionY()+5);
+					VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (40 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (40)) + 0);
+					createParticleEffect(foo, bar, 25);
+				}
+				
 			}
 
 			cityCollision == NULL ;
@@ -659,7 +693,7 @@ void myGame::render()
 
 		ss.str("");
 		ss.clear();
-		ss<<cities.getSize();
+		ss<<numCities;
 		dxFont->print(ss.str() + " cities survived.",70,250);
 
 		ss.str("");

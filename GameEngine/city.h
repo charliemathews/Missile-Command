@@ -11,8 +11,8 @@ class City;
 
 namespace cityNS
 {
-	const int WIDTH = 56;				// image width
-	const int HEIGHT = 60;					// image height
+	const int WIDTH = 58;				// image width
+	const int HEIGHT = 62;					// image height
 	const int X = 0;						// location on screen
 	const int Y = 0;
 	const float SPEED_X = 0;				// initial velocity

@@ -101,6 +101,7 @@ const RECT	COLLISION_BOX_PLAYER = {-32,-42,32,42};
 const RECT	COLLISION_BOX_ROCKET = {-3,-22,3,22};
 const RECT	COLLISION_BOX_SPIT = {-16,-11,16,11};
 const RECT	COLLISION_BOX_ASTEROID = {-30,-30,30,30};
+const RECT	NO_COL_BOX = {0,0,0,0};
 // image file names
 const char ALIEN_IMAGE[] = "pictures\\alien1.png" ;
 const char ROCKET_IMAGE[] = "pictures\\rocket.png" ;

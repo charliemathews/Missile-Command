@@ -71,7 +71,7 @@ private:
 	int tickCounter;
 	bool getMouseDepressedLast;
 	bool enterDepressedLastFrame;
-	int nightCount;
+	int nightCount, numCities;
 	bool endedGame;
 	//text
 	std::stringstream buffer ;
