@@ -298,7 +298,7 @@ void myGame::update()
 	int lineOpt = 0;
 
 	
-		City** cities_raw = (City**)cities.getArray();
+	City** cities_raw = (City**)cities.getArray();
 	VECTOR2 vel;
 	VECTOR2* foo;
 
@@ -677,7 +677,7 @@ void myGame::render()
 		if(isNight) dxFont->setFontColor(graphicsNS::WHITE);
 		ss.str("");
 		ss.clear();
-		if(cities.getSize() > 0) dxFont->print("Nice work!", 70, 50);
+		if(numCities > 0) dxFont->print("Nice work!", 70, 50);
 		else dxFont->print("You tried...", 70, 50);
 
 		
@@ -912,7 +912,7 @@ void myGame::fireSpitball(VECTOR2 source)
 {
 	int randTarget = (rand()%GAME_WIDTH)+1;
 	Spitball* newSpitball = new Spitball();
-	if (!newSpitball->initialize(this, spitballNS::WIDTH, spitballNS::HEIGHT,1, &spitTM))
+	if (!newSpitball->initialize(this, spitballNS::WIDTH, spitballNS::HEIGHT,2, &spitTM))
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing spitball entity"));
 
 	newSpitball->setX(source.x);
@@ -929,6 +929,11 @@ void myGame::fireSpitball(VECTOR2 source)
 	newSpitball->setVisible();
 	newSpitball->setAliveTime();
 	newSpitball->setActive(true);
+
+	newSpitball->setFrames(0,1);
+	newSpitball->setCurrentFrame(0);
+	newSpitball->setFrameDelay(0.3f);
+
 
 	spits.add(newSpitball);
 	if(sfxOn)audio->playCue("shoot");

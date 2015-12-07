@@ -11,8 +11,8 @@ class spitball;
 #define PI 3.14159265
 namespace spitballNS
 {
-	const int WIDTH = 32;					// image width
-	const int HEIGHT = 22;					// image height
+	const int WIDTH = 31;					// image width
+	const int HEIGHT = 23;					// image height
 	const int X = 0;						// location on screen
 	const int Y = 0;
 	const float SPEED_X = 1;				// initial velocity
