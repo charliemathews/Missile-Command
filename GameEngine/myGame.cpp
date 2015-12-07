@@ -8,7 +8,13 @@ using namespace std ;
 //=============================================================================
 myGame::myGame()
 {
+	for (int i = 0; i < MAX_SCORES_DISPLAYED; i++)
+	{
+		topTenScores[i] = INT_MIN;
+	}
+
 	//nothing here, move on
+	//rocketsAvailable = 5;
 }
 
 //=============================================================================
@@ -27,6 +33,7 @@ void myGame::initialize(HWND hwnd)
 {
 	Game::initialize(hwnd); 
 
+#pragma region Initializing AI patterns
 	/* INITIALIZE PATTERNS */
 	lambda alien_enter = [&] (Entity* e) {
 		e->setVelocity(D3DXVECTOR2(-100,0)) ;
@@ -134,6 +141,8 @@ void myGame::initialize(HWND hwnd)
 		e->setVelocity(D3DXVECTOR2(150,0));
 
 	});
+#pragma endregion
+
 	//particles
 	pm.initialize(graphics);
 
@@ -151,7 +160,7 @@ void myGame::initialize(HWND hwnd)
 
 	backgroundImage.setY(backgroundImage.getY() + backgroundImage.getHeight()-40);
 	backgroundImage2.setY(backgroundImage.getY() - backgroundImage2.getHeight() + 20);
-	
+
 	if(!starsTM.initialize(graphics,STAR_IMAGE))
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing background texture"));
 	if (!starImage.initialize(graphics,0,0,1, &starsTM))
@@ -181,7 +190,17 @@ void myGame::initialize(HWND hwnd)
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing cross hair texture"));
 	if (!crossHairImage.initialize(graphics,0,0,1, &crossHairTM))
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing cross hair image"));
-	
+
+	for (int i = 0; i < MAX_ROCKETS; i++)
+	{
+		if (!rocketsRemaining[i].initialize(graphics, rocketNS::WIDTH, rocketNS::HEIGHT, 0, &rocketTM))
+			throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing rocket image"));
+
+		rocketsRemaining[i].setX(10);
+		rocketsRemaining[i].setY(GAME_HEIGHT - GAME_HEIGHT/8 - (i + 1) * 2 * rocketNS::HEIGHT);
+	}
+
+
 	//menu screen alien
 	if (!mAlien.initialize(this, alienNS::WIDTH, alienNS::HEIGHT, 1, &alienTM))
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing menu alien image"));
@@ -297,7 +316,7 @@ void myGame::update()
 {
 	int lineOpt = 0;
 
-	
+
 	City** cities_raw = (City**)cities.getArray();
 	VECTOR2 vel;
 	VECTOR2* foo;
@@ -320,21 +339,21 @@ void myGame::update()
 		}
 		if(lineOpt == 2) gameStates = instruct;
 		if(lineOpt == 3) gameStates = credits;
-
+		if(lineOpt == 4) gameStates = highScore;
 		//lil menu alien
 		//mAlien.update(frameTime);
-	
+
 		break;
 	case gamePlay:
-		
+
 		ShowCursor(false);
 		if(input->getMouseLButton())getMouseDepressedLast = true;
 		if(!input->getMouseLButton()&&getMouseDepressedLast)
 		{
 			getMouseDepressedLast = false;
-			if(rockets.getSize() < 6) fireRocket();
+			if(rockets.getSize() < MAX_ROCKETS) fireRocket();
 		}
-		
+
 		scrollBG();
 		numCities = 0;
 		for(int i = 0; i < cities.getSize(); i++)
@@ -343,15 +362,15 @@ void myGame::update()
 		}
 		if(nightCount >= 3 && backgroundImage.getY() <= -740)
 		{
-
+			addHighScores(score);
 			gameStates = endGame;
 		}
 		if(numCities == 0)
 		{
-		
+			addHighScores(score);
 			gameStates = endGame;
 		}
-		
+
 		if(alienTimer < 8.00) alienTimer += frameTime;
 		else if(isNight && nightCount < 3)
 		{
@@ -360,14 +379,14 @@ void myGame::update()
 		}
 		else if(isNight && nightCount == 3)
 		{
-				int randNum = (rand() % 3)+1;
-				for(int i = 0; i < randNum; i++)
-				{
-					spawnAlien();
-				}
-				alienTimer = 0;
+			int randNum = (rand() % 3)+1;
+			for(int i = 0; i < randNum; i++)
+			{
+				spawnAlien();
+			}
+			alienTimer = 0;
 		}
-		
+
 		if(bolideTimer < 1.70) bolideTimer += frameTime ;
 		else
 		{
@@ -401,6 +420,13 @@ void myGame::update()
 		//
 		crossHairImage.setX(input->getMouseX() - crossHairImage.getWidth()/3);
 		crossHairImage.setY(input->getMouseY() - crossHairImage.getHeight()/2);
+
+		//rockets stack
+		int index;
+		for (index = MAX_ROCKETS; index > (MAX_ROCKETS - rockets.getSize()); index--)
+			rocketsRemaining[index - 1].setVisible(false);
+		for (int i = index - 1; i >= 0; i--)
+			rocketsRemaining[i].setVisible(true);
 
 		//particles
 		pm.update(frameTime);
@@ -438,6 +464,15 @@ void myGame::update()
 			enterDepressedLastFrame = false;
 		}
 		break;
+	case highScore:
+		ShowCursor(true);
+		if(input->getMouseLButton()) enterDepressedLastFrame = true;
+		if (!input->getMouseLButton() && enterDepressedLastFrame)
+		{
+			gameStates = gameMenu;
+			enterDepressedLastFrame = false;
+		}
+		break;
 	}
 
 
@@ -462,159 +497,159 @@ void myGame::collisions()
 {
 	if(gameStates == gamePlay)
 	{
-	collisionVector = D3DXVECTOR2(0,0); // clear collision vector
+		collisionVector = D3DXVECTOR2(0,0); // clear collision vector
 
-	int bolides_size	= bolides.getSize();
-	int spits_size		= spits.getSize();
-	int rockets_size	= rockets.getSize();
-	int aliens_size		= aliens.getSize();
-	int cities_size		= cities.getSize();
+		int bolides_size	= bolides.getSize();
+		int spits_size		= spits.getSize();
+		int rockets_size	= rockets.getSize();
+		int aliens_size		= aliens.getSize();
+		int cities_size		= cities.getSize();
 
 
-	Bolide** bolides_raw = (Bolide**)bolides.getArray();
+		Bolide** bolides_raw = (Bolide**)bolides.getArray();
 
-	// handle asteroid<->asteroid collisions
-	Bolide* bolideCollision ;
-	Rocket* rocketCollision ;
-	City* cityCollision ;
-	Spitball* spitCollision ;
-	Alien* alienCollision;
+		// handle asteroid<->asteroid collisions
+		Bolide* bolideCollision ;
+		Rocket* rocketCollision ;
+		City* cityCollision ;
+		Spitball* spitCollision ;
+		Alien* alienCollision;
 
-	for(int i = 0; i < bolides_size; ++i)
-	{
-		bolideCollision = (Bolide*)bolides.checkCollision(bolides_raw[i], collisionVector) ;
-		if(bolideCollision != NULL)
+		for(int i = 0; i < bolides_size; ++i)
 		{
-			bolideCollision->bounce(collisionVector, *bolides_raw[i]);
-			collisionVector = D3DXVECTOR2(0,0);
-		}
-		bolideCollision == NULL ;
-
-		if(rockets_size > 0)
-		{
-			rocketCollision = (Rocket*)rockets.checkCollision(bolides_raw[i], collisionVector) ;
-			if(rocketCollision != NULL)
+			bolideCollision = (Bolide*)bolides.checkCollision(bolides_raw[i], collisionVector) ;
+			if(bolideCollision != NULL)
 			{
-				if(sfxOn)audio->playCue("hit");
-				rocketCollision->setActive(false);
-				bolides_raw[i]->setHealth(-1);
-				score += 100 ;
-				VECTOR2 foo = VECTOR2(bolides_raw[i]->getPositionX()-10, bolides_raw[i]->getPositionY()+5);
-				VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (50 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
-				createParticleEffect(foo, bar, 10);
-				collisionVector = D3DXVECTOR2(0,0);
-			
-				scoreFont->setFontColor(graphicsNS::GREEN);
-
-			}
-			rocketCollision == NULL ;
-		}
-
-		cityCollision = (City*)cities.checkCollision(bolides_raw[i], collisionVector) ;
-		if(cityCollision != NULL)
-		{
-			if(cityCollision->getHealth() > 0)
-			{
-			if(sfxOn)audio->playCue("explosion");
-			cityCollision->damage(1);
-			bolides_raw[i]->setHealth(-1);
-			score -= 100 ;
-			scoreFont->setFontColor(graphicsNS::RED);
-			cityCollision->setColorFilter(graphicsNS::RED);
-			collisionVector = D3DXVECTOR2(0,0);
-			VECTOR2 foo = VECTOR2(bolides_raw[i]->getPositionX()-10, bolides_raw[i]->getPositionY()+5);
-			VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (20 - 10)) -10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
-			createParticleEffect(foo, VECTOR2(bar.x,-10), 10);
-			}
-			
-			
-		}
-		cityCollision == NULL ;
-	}
-
-	if(aliens_size > 0)
-	{
-		
-		Alien** aliens_raw = (Alien**)aliens.getArray();
-		if(rockets_size > 0)
-		{
-		for(int i = 0; i < aliens_size; ++i)
-		{
-			rocketCollision = (Rocket*)rockets.checkCollision(aliens_raw[i], collisionVector) ;
-			if(rocketCollision != NULL)
-			{
-				if(sfxOn)audio->playCue("explosion");
-				rocketCollision->setActive(false);
-				aliens_raw[i]->setHealth(-1);
-				score += 250 ;
-				collisionVector = D3DXVECTOR2(0,0);
-				scoreFont->setFontColor(graphicsNS::GREEN);
-				VECTOR2 foo = VECTOR2(aliens_raw[i]->getPositionX()-10, aliens_raw[i]->getPositionY()+5);
-				VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (40 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (40)) + 0);
-				createParticleEffect(foo, bar, 25);
-			}
-			rocketCollision == NULL ;
-		}
-		}
-		if(aliens_size > 1)
-		{
-		for(int i = 0; i < aliens_size; ++i)
-		{
-			alienCollision = (Alien*)aliens.checkCollision(aliens_raw[i], collisionVector) ;
-			if(alienCollision != NULL)
-			{
-				alienCollision->bounce(collisionVector,*aliens_raw[i]);
+				bolideCollision->bounce(collisionVector, *bolides_raw[i]);
 				collisionVector = D3DXVECTOR2(0,0);
 			}
-			alienCollision == NULL ;
-		}
-		}
-	}
+			bolideCollision == NULL ;
 
-	if(spits_size > 0)
-	{
-		Spitball** spits_raw = (Spitball**)spits.getArray();
-		City** cities_raw = (City**)cities.getArray();
-
-		for(int i = 0; i < spits_size; ++i)
-		{
-			rocketCollision = (Rocket*)rockets.checkCollision(spits_raw[i], collisionVector) ;
-			if(rocketCollision != NULL)
+			if(rockets_size > 0)
 			{
-				if(sfxOn)audio->playCue("hit");
-				rocketCollision->setActive(false);
-				spits_raw[i]->setHealth(-1);
-				score += 200 ;
-				collisionVector = D3DXVECTOR2(0,0);
-				scoreFont->setFontColor(graphicsNS::GREEN);
-				VECTOR2 foo = VECTOR2(spits_raw[i]->getPositionX()-10, spits_raw[i]->getPositionY()+5);
-				VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (40 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (40)) + 0);
-				createParticleEffect(foo, bar, 25);
-			}
-			rocketCollision == NULL ;
+				rocketCollision = (Rocket*)rockets.checkCollision(bolides_raw[i], collisionVector) ;
+				if(rocketCollision != NULL)
+				{
+					if(sfxOn)audio->playCue("hit");
+					rocketCollision->setActive(false);
+					bolides_raw[i]->setHealth(-1);
+					score += 100 ;
+					VECTOR2 foo = VECTOR2(bolides_raw[i]->getPositionX()-10, bolides_raw[i]->getPositionY()+5);
+					VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (50 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
+					createParticleEffect(foo, bar, 10);
+					collisionVector = D3DXVECTOR2(0,0);
 
-			cityCollision = (City*)cities.checkCollision(spits_raw[i], collisionVector) ;
-			if(cityCollision != NULL )
+					scoreFont->setFontColor(graphicsNS::GREEN);
+
+				}
+				rocketCollision == NULL ;
+			}
+
+			cityCollision = (City*)cities.checkCollision(bolides_raw[i], collisionVector) ;
+			if(cityCollision != NULL)
 			{
 				if(cityCollision->getHealth() > 0)
 				{
 					if(sfxOn)audio->playCue("explosion");
 					cityCollision->damage(1);
-					spits_raw[i]->setHealth(-1);
-					score -= 200 ;
+					bolides_raw[i]->setHealth(-1);
+					score -= 100 ;
 					scoreFont->setFontColor(graphicsNS::RED);
 					cityCollision->setColorFilter(graphicsNS::RED);
 					collisionVector = D3DXVECTOR2(0,0);
+					VECTOR2 foo = VECTOR2(bolides_raw[i]->getPositionX()-10, bolides_raw[i]->getPositionY()+5);
+					VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (20 - 10)) -10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
+					createParticleEffect(foo, VECTOR2(bar.x,-10), 10);
+				}
+
+
+			}
+			cityCollision == NULL ;
+		}
+
+		if(aliens_size > 0)
+		{
+
+			Alien** aliens_raw = (Alien**)aliens.getArray();
+			if(rockets_size > 0)
+			{
+				for(int i = 0; i < aliens_size; ++i)
+				{
+					rocketCollision = (Rocket*)rockets.checkCollision(aliens_raw[i], collisionVector) ;
+					if(rocketCollision != NULL)
+					{
+						if(sfxOn)audio->playCue("explosion");
+						rocketCollision->setActive(false);
+						aliens_raw[i]->setHealth(-1);
+						score += 250 ;
+						collisionVector = D3DXVECTOR2(0,0);
+						scoreFont->setFontColor(graphicsNS::GREEN);
+						VECTOR2 foo = VECTOR2(aliens_raw[i]->getPositionX()-10, aliens_raw[i]->getPositionY()+5);
+						VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (40 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (40)) + 0);
+						createParticleEffect(foo, bar, 25);
+					}
+					rocketCollision == NULL ;
+				}
+			}
+			if(aliens_size > 1)
+			{
+				for(int i = 0; i < aliens_size; ++i)
+				{
+					alienCollision = (Alien*)aliens.checkCollision(aliens_raw[i], collisionVector) ;
+					if(alienCollision != NULL)
+					{
+						alienCollision->bounce(collisionVector,*aliens_raw[i]);
+						collisionVector = D3DXVECTOR2(0,0);
+					}
+					alienCollision == NULL ;
+				}
+			}
+		}
+
+		if(spits_size > 0)
+		{
+			Spitball** spits_raw = (Spitball**)spits.getArray();
+			City** cities_raw = (City**)cities.getArray();
+
+			for(int i = 0; i < spits_size; ++i)
+			{
+				rocketCollision = (Rocket*)rockets.checkCollision(spits_raw[i], collisionVector) ;
+				if(rocketCollision != NULL)
+				{
+					if(sfxOn)audio->playCue("hit");
+					rocketCollision->setActive(false);
+					spits_raw[i]->setHealth(-1);
+					score += 200 ;
+					collisionVector = D3DXVECTOR2(0,0);
+					scoreFont->setFontColor(graphicsNS::GREEN);
 					VECTOR2 foo = VECTOR2(spits_raw[i]->getPositionX()-10, spits_raw[i]->getPositionY()+5);
 					VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (40 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (40)) + 0);
 					createParticleEffect(foo, bar, 25);
 				}
-				
-			}
+				rocketCollision == NULL ;
 
-			cityCollision == NULL ;
+				cityCollision = (City*)cities.checkCollision(spits_raw[i], collisionVector) ;
+				if(cityCollision != NULL )
+				{
+					if(cityCollision->getHealth() > 0)
+					{
+						if(sfxOn)audio->playCue("explosion");
+						cityCollision->damage(1);
+						spits_raw[i]->setHealth(-1);
+						score -= 200 ;
+						scoreFont->setFontColor(graphicsNS::RED);
+						cityCollision->setColorFilter(graphicsNS::RED);
+						collisionVector = D3DXVECTOR2(0,0);
+						VECTOR2 foo = VECTOR2(spits_raw[i]->getPositionX()-10, spits_raw[i]->getPositionY()+5);
+						VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (40 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (40)) + 0);
+						createParticleEffect(foo, bar, 25);
+					}
+
+				}
+
+				cityCollision == NULL ;
+			}
 		}
-	}
 	}
 
 }
@@ -629,7 +664,7 @@ void myGame::render()
 	std::stringstream ss ;
 	graphics->spriteBegin(); // begin drawing sprites
 	int cityMultiplier = 0;
-	
+
 	switch(gameStates)
 	{
 	case gameMenu:
@@ -652,7 +687,7 @@ void myGame::render()
 		pm.draw();
 		rockets.draw();
 		thePlayer.draw(thePlayer.getColorFilter());
-	
+
 		crossHairImage.draw();
 
 		if(!isNight && nightCount == 0)
@@ -662,10 +697,13 @@ void myGame::render()
 			else if(timer <= 9.00)
 			{
 				dxFont->print("Click to fire your rockets\nto stop them before they take us out.\nOh, and deal with the asteroids too.", 100,100);
-				
+
 			}
-			
+
 		}
+
+		for (int i = 0; i < MAX_ROCKETS; i++)
+			rocketsRemaining[i].draw();
 
 		//redOver.draw();
 		break;
@@ -680,7 +718,7 @@ void myGame::render()
 		if(numCities > 0) dxFont->print("Nice work!", 70, 50);
 		else dxFont->print("You tried...", 70, 50);
 
-		
+
 		if(nightCount == 1) dxFont->print("You didn't even make it one night...",70,150);
 		else if(nightCount == 2) dxFont->print("You made it 1 night!",70,150);
 		else if(nightCount == 3) dxFont->print("You made it 2 nights!",70,150);
@@ -725,6 +763,24 @@ void myGame::render()
 	case instruct:
 		instructImage.draw();
 		break;
+	case highScore:
+		starImage.draw();
+
+		dxFont->setFontColor(graphicsNS::WHITE);
+		dxFont->print("High Scores", GAME_WIDTH/2 - 80, GAME_HEIGHT/8);
+
+		for (int i = 0; i < MAX_SCORES_DISPLAYED; i++)
+		{
+			if (topTenScores[i] == INT_MIN)
+			{
+				if (i == 0)
+					dxFont->print("No one has beaten the Llamas yet!", GAME_WIDTH/3 - 40, GAME_HEIGHT/3);
+
+				break;
+			}
+
+			dxFont->print(to_string(i + 1) + ". " + to_string(topTenScores[i]), GAME_WIDTH/2 - 80, GAME_HEIGHT/4 + i * 40);
+		}
 	}
 
 	graphics->spriteEnd(); // end drawing sprites
@@ -883,6 +939,9 @@ void myGame::scrollBG()
 }
 void myGame::fireRocket()
 {
+	if (rockets.getSize() >= MAX_ROCKETS)
+		return;
+
 	Rocket* newRocket = new Rocket();
 	if (!newRocket->initialize(this, rocketNS::WIDTH, rocketNS::HEIGHT,1, &rocketTM))
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing rocket entity"));
@@ -944,4 +1003,26 @@ void myGame::createParticleEffect(VECTOR2 pos, VECTOR2 vel, int numParticles){
 	pm.setPosition(pos);
 	pm.setVelocity(vel);
 	pm.setVisibleNParticles(numParticles);
+}
+
+
+bool wayToSort(int i, int j) { return i > j; }
+void myGame::addHighScores(int newScore)
+{
+
+	int allScores[MAX_SCORES_DISPLAYED + 1];
+
+	for (int i = 0; i < MAX_SCORES_DISPLAYED; i++)
+	{
+		allScores[i] = topTenScores[i];
+	}
+
+	allScores[MAX_SCORES_DISPLAYED] = newScore;
+
+	std::sort(allScores, allScores + (MAX_SCORES_DISPLAYED + 1), wayToSort);
+
+	for (int i = 0; i < MAX_SCORES_DISPLAYED; i++)
+	{
+		topTenScores[i] = allScores[i];
+	}
 }

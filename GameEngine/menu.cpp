@@ -15,6 +15,7 @@ void Menu::initialize(Graphics *g, Input *i)
 	menuItem2 = "Disable SoundFX";
 	menuItem3 = "Instructions";
 	menuItem4 = "Credits";
+	menuItem5 = "High Scores";
 	highlightColor = graphicsNS::RED;
 	normalColor = graphicsNS::WHITE;
 	menuAnchor = D3DXVECTOR2(50,380);
@@ -27,15 +28,15 @@ void Menu::initialize(Graphics *g, Input *i)
 	menuHeadingFont = new TextDX();
 	menuItemFontHighlight = new TextDX();
 	if(menuItemFont->initialize(graphics, 25, true, false, "Retro Computer") == false)
-        throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing menuItem font"));
+		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing menuItem font"));
 	if(menuItemFontHighlight->initialize(graphics, 28, true, false, "Retro Computer") == false)
-        throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing menuItem font"));
+		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing menuItem font"));
 	if(menuHeadingFont->initialize(graphics, 61, true, false, "Retro Computer") == false)
-        throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing menuHeading font"));
+		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing menuHeading font"));
 	menuHeadingFont->setFontColor(normalColor);
 	menuItemFont->setFontColor(graphicsNS::WHITE);
 	menuItemFontHighlight->setFontColor(highlightColor);
-	
+
 	upDepressedLastFrame = false;
 	downDepressedLastFrame = false;
 	enterDepressedLastFrame = false;
@@ -44,14 +45,14 @@ void Menu::initialize(Graphics *g, Input *i)
 int Menu::update()
 {
 	if(input->getMouseLButton()) enterDepressedLastFrame = true;
-	
+
 	int yPos = input->getMouseY();
-	
+
 	if(yPos >= menuAnchor.y&& yPos <= menuAnchor.y + 30)
 	{
 		selectedItem = 0;
 	}
-	
+
 	int foo = verticalOffset;
 	if(yPos >= menuAnchor.y + foo && yPos <= menuAnchor.y + foo + 30)
 	{
@@ -67,6 +68,14 @@ int Menu::update()
 	{
 		selectedItem = 3;
 	}
+	foo = verticalOffset * 4;
+	if (yPos >= menuAnchor.y + foo && yPos <= menuAnchor.y + foo + 30)
+	{
+		selectedItem = 4;
+	}
+
+
+
 	linePtr = selectedItem;
 	if (!input->getMouseLButton() && enterDepressedLastFrame)
 	{	
@@ -82,7 +91,7 @@ int Menu::update()
 				menuItem2="Disable SoundFX";
 			}
 		}
-		
+
 		enterDepressedLastFrame = false;
 		return selectedItem;
 	}
@@ -109,11 +118,12 @@ void Menu::displayMenu()
 		menuItemFont->print(menuItem3, menuAnchor.x, menuAnchor.y+foo);
 	foo = 3*verticalOffset;
 	if(linePtr==3)
-	{
 		menuItemFontHighlight->print(menuItem4, menuAnchor.x, menuAnchor.y+foo);
-	}
 	else
-	{
 		menuItemFont->print(menuItem4, menuAnchor.x, menuAnchor.y+foo);
-	}
+	foo = 4*verticalOffset;
+	if (linePtr == 4)
+		menuItemFontHighlight->print(menuItem5, menuAnchor.x, menuAnchor.y+foo);
+	else
+		menuItemFont->print(menuItem5, menuAnchor.x, menuAnchor.y+foo);
 }

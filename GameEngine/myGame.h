@@ -16,6 +16,7 @@ class myGame;
 #include <ctime>
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 
 #include "constants.h"
 #include "entityManager.h"
@@ -31,9 +32,9 @@ class myGame;
 #include "city.h"
 #include "alien.h"
 #include "projectile.h"
-	#include "bolide.h"
-	#include "spitball.h"
-	#include "rocket.h"
+#include "bolide.h"
+#include "spitball.h"
+#include "rocket.h"
 #include "particleManager.h"
 
 //=============================================================================
@@ -42,11 +43,12 @@ class myGame;
 class myGame : public Game
 {
 private:
-    TextureManager alienTM, rocketTM,bolideTM,cityTM,playerTM, spitTM ;
+	TextureManager alienTM, rocketTM,bolideTM,cityTM,playerTM, spitTM ;
 	TextureManager backgroundTM, background2TM,starsTM,creditsTM,instructTM,crossHairTM;
-	Image backgroundImage, backgroundImage2, starImage, creditsImage, instructImage, crossHairImage;
-    VECTOR2 collisionVector ;
-	
+
+	Image backgroundImage, backgroundImage2, starImage, creditsImage, instructImage, crossHairImage, rocketsRemaining[MAX_ROCKETS];
+	VECTOR2 collisionVector ;
+
 	GameStates gameStates ;
 	Menu *menu ;
 	bool sfxOn ;
@@ -86,21 +88,23 @@ private:
 	bool isNight;
 	bool isTutorial;
 
+	int topTenScores[MAX_SCORES_DISPLAYED];
+
 public:
-    // Constructor
-    myGame();
+	// Constructor
+	myGame();
 
-    // Destructor
-    virtual ~myGame();
+	// Destructor
+	virtual ~myGame();
 
-    // Initialize the game
-    void initialize(HWND hwnd);
-    void update();      // must override pure virtual from Game
-    void ai();          // "
-    void collisions();  // "
-    void render();      // "
-    void releaseAll();
-    void resetAll();
+	// Initialize the game
+	void initialize(HWND hwnd);
+	void update();      // must override pure virtual from Game
+	void ai();          // "
+	void collisions();  // "
+	void render();      // "
+	void releaseAll();
+	void resetAll();
 	void spawnBolide(VECTOR2 target);
 	void scrollBG();
 	void setSFX(){sfxOn = !sfxOn;}
@@ -108,6 +112,7 @@ public:
 	void spawnAlien();
 	void fireSpitball(VECTOR2 source);
 	void createParticleEffect(VECTOR2 pos, VECTOR2 vel, int numParticles);
+	void addHighScores(int newScore);
 };
 
 #endif

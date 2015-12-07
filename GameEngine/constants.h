@@ -85,6 +85,7 @@ const int MAX_ROCKETS = 5;
 const int MAX_ALIENS = 10;
 const int MAX_ASTEROIDS = 10;
 const int MAX_CITIES = 4;
+const int MAX_SCORES_DISPLAYED = 10;
 const int GAME_END_TIME = 120000;
 const float MAX_PARTICLE_LIFETIME = 1.5f;
 const int MAX_NUMBER_PARTICLES = 500;
@@ -137,6 +138,6 @@ const char EXPLODE[] = "explosion";
 
 // pattern steps
 enum ALIEN_PATTERN_STEP_ACTION {NONE, ENTER, CAMP, LEAVE};
-enum GameStates {gameMenu, gamePlay, endGame,credits,instruct};
+enum GameStates {gameMenu, gamePlay, endGame,credits,instruct,highScore};
 
 #endif

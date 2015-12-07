@@ -5,18 +5,18 @@
 //=============================================================================
 Rocket::Rocket() : Entity()
 {
-    spriteData.width = rocketNS::WIDTH;           
-    spriteData.height = rocketNS::HEIGHT;
-    spriteData.x = rocketNS::X;                   
-    spriteData.y = rocketNS::Y;
-    spriteData.rect.bottom = rocketNS::HEIGHT/2;    
-    spriteData.rect.right = rocketNS::WIDTH;
-    velocity.x = 0;                             
-    velocity.y = 0;                           
-    radius = rocketNS::WIDTH/2.0;                 // collision radius
-    collision = false;
-    collisionType = entityNS::CIRCLE;
-    target = false;
+	spriteData.width = rocketNS::WIDTH;           
+	spriteData.height = rocketNS::HEIGHT;
+	spriteData.x = rocketNS::X;                   
+	spriteData.y = rocketNS::Y;
+	spriteData.rect.bottom = rocketNS::HEIGHT/2;    
+	spriteData.rect.right = rocketNS::WIDTH;
+	velocity.x = 0;                             
+	velocity.y = 0;                           
+	radius = rocketNS::WIDTH/2.0;                 // collision radius
+	collision = false;
+	collisionType = entityNS::CIRCLE;
+	target = false;
 	edge.bottom = -rocketNS::HEIGHT/2;
 	spriteData.scale = 1;
 	active = true;
@@ -25,11 +25,11 @@ Rocket::Rocket() : Entity()
 }
 
 bool Rocket::initialize(Game *gamePtr, int width, int height, int ncols,
-    TextureManager *textureM)
+						TextureManager *textureM)
 {
 	directionY = -1;
 	directionX = 0;
-    return(Entity::initialize(gamePtr, width, height, ncols, textureM));
+	return(Entity::initialize(gamePtr, width, height, ncols, textureM));
 
 }
 
@@ -64,28 +64,37 @@ void Rocket::update(float frameTime)
 	setPosition(VECTOR2(spriteData.x,spriteData.y));
 	if(dir.x > 0)
 	{
-			if(spriteData.x >= coords.x && spriteData.y <= coords.y)
-			{
-				velocity.x = 0;
-				velocity.y = 0;	
-				setInvisible();
-				setActive(false);
-				
-			}
+		if(spriteData.x >= coords.x && spriteData.y <= coords.y)
+		{
+			velocity.x = 0;
+			velocity.y = 0;	
+			setInvisible();
+			setActive(false);
+
+		}
 	}
 	else if( dir.x <=0)
 	{
 		if(spriteData.x <= coords.x && spriteData.y <= coords.y)
-			{
-				velocity.x = 0;
-				velocity.y = 0;
-				setInvisible();
-				setActive(false);
-					
-				
-			}
+		{
+			velocity.x = 0;
+			velocity.y = 0;
+			setInvisible();
+			setActive(false);
+
+
+		}
 	}
-	
+
+	//If the rocket goes off the screen
+	if (spriteData.x < 0 || spriteData.x > GAME_WIDTH || spriteData.y > GAME_HEIGHT || spriteData.y < 0)
+	{
+		velocity.x = 0;
+		velocity.y = 0;
+		setInvisible();
+		setActive(false);
+	}
+
 
 }
 VECTOR2 Rocket::getTarget()
@@ -115,44 +124,44 @@ Sensing AI
 /*
 void Rocket::evade() // anti-tracking
 {
-	//add code here
-	//vectorTrack() ;
-	// basically just reverse direction.
+//add code here
+//vectorTrack() ;
+// basically just reverse direction.
 
-	
-	//VECTOR2 vel = getCenterPoint() - targetEntity.getCenterPoint() ;
-	//if(vel.x == 0 && vel.y == 0) return ;
-	//VECTOR2* foo = D3DXVec2Normalize(&vel, &vel);
-	//setVelocity(vel);
-	
 
-	vectorTrack();
-	setVelocity(-getVelocity());
+//VECTOR2 vel = getCenterPoint() - targetEntity.getCenterPoint() ;
+//if(vel.x == 0 && vel.y == 0) return ;
+//VECTOR2* foo = D3DXVec2Normalize(&vel, &vel);
+//setVelocity(vel);
 
-	return;
+
+vectorTrack();
+setVelocity(-getVelocity());
+
+return;
 }
 
 void Rocket::deltaTrack()
 {
-	//VECTOR2 vel = D2DXVECTOR2(1,1);
-	//VECTOR2 targetCenter = targetEntity.getCenterPoint();
-	//if(getCenterPoint().y <= targetCenter.y) vel.y = -1 ;
-	//if(getCenterPoint().x <= targetCenter.x) vel.x = -1 ;
+//VECTOR2 vel = D2DXVECTOR2(1,1);
+//VECTOR2 targetCenter = targetEntity.getCenterPoint();
+//if(getCenterPoint().y <= targetCenter.y) vel.y = -1 ;
+//if(getCenterPoint().x <= targetCenter.x) vel.x = -1 ;
 
-	//if(vel.x == 0 && vel.y == 0) return ;
-	//VECTOR2* foo = D3DXVec2Normalize(&vel, &vel);
-	//setVelocity(-vel);
-	return ;
+//if(vel.x == 0 && vel.y == 0) return ;
+//VECTOR2* foo = D3DXVec2Normalize(&vel, &vel);
+//setVelocity(-vel);
+return ;
 }
 
 void Rocket::vectorTrack()
 {
-	//n.pos += dir * speed * frametime
-	VECTOR2 vel = getCenterPoint() - targetEntity.getCenterPoint() ;
-	if(vel.x == 0 && vel.y == 0) return ;
-	VECTOR2* foo = D3DXVec2Normalize(&vel, &vel);
-	setVelocity(-vel);
-	return ;
+//n.pos += dir * speed * frametime
+VECTOR2 vel = getCenterPoint() - targetEntity.getCenterPoint() ;
+if(vel.x == 0 && vel.y == 0) return ;
+VECTOR2* foo = D3DXVec2Normalize(&vel, &vel);
+setVelocity(-vel);
+return ;
 }
 */
 
@@ -160,10 +169,10 @@ void Rocket::vectorTrack()
 /*
 void Rocket::ai(float time, Entity &t)
 { 
-	targetEntity = t;
-	//vectorTrack();
-	//deltaTrack();
-	//evade();
-	return;
+targetEntity = t;
+//vectorTrack();
+//deltaTrack();
+//evade();
+return;
 }
 */

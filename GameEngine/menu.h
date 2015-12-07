@@ -39,6 +39,7 @@ private:
    std::string menuItem2;
    std::string menuItem3;
    std::string menuItem4;
+   std::string menuItem5;
    D3DXVECTOR2 menuAnchor;
    int verticalOffset;
    int linePtr;
