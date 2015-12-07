@@ -69,7 +69,6 @@ void City::update(float frameTime)
 	setPosition(VECTOR2(spriteData.x,spriteData.y));
 }
 
-
 void City::damage(int weapon)
 {
 	health -=  weapon;
