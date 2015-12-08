@@ -371,7 +371,10 @@ void myGame::update()
 		break;
 	case gamePlay:
 
-		
+		for(int i = 0; i < rockets.getSize(); ++i)
+		{
+			createParticleEffect(VECTOR2(rockets_raw[i]->getCenterX()-15, rockets_raw[i]->getCenterY()),-rockets_raw[i]->getVelocity(),2);
+		}
 		for(int i = 0; i < explosions.getSize(); ++i)
 		{
 			if(exp_raw[i]->getAnimationComplete()) exp_raw[i]->setHealth(-1);
@@ -480,7 +483,8 @@ void myGame::update()
 		//
 		crossHairImage.setX(input->getMouseX() - crossHairImage.getWidth()/3);
 		crossHairImage.setY(input->getMouseY() - crossHairImage.getHeight()/2);
-
+		//
+		
 		//rockets stack
 		int index;
 		for (index = MAX_ROCKETS; index > (MAX_ROCKETS - rockets.getSize()); index--)

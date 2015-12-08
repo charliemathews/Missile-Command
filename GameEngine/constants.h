@@ -87,8 +87,8 @@ const int MAX_ASTEROIDS = 10;
 const int MAX_CITIES = 4;
 const int MAX_SCORES_DISPLAYED = 10;
 const int GAME_END_TIME = 120000;
-const float MAX_PARTICLE_LIFETIME = 1.5f;
-const int MAX_NUMBER_PARTICLES = 500;
+const float MAX_PARTICLE_LIFETIME = .15f;
+const int MAX_NUMBER_PARTICLES = 300;
 // game
 const double PI = 3.14159265;
 const float FRAME_RATE = 200.0f;                // the target frame rate (frames/sec)
