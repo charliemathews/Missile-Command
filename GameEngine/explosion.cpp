@@ -13,9 +13,9 @@ Explosion::Explosion() : Entity()
 	spriteData.rect.right = explosionNS::WIDTH;
 	velocity.x = 0;                             
 	velocity.y = 0;                           
-	radius = explosionNS::WIDTH/2.0;                 // collision radius
+	radius = 40;                 // collision radius
 	collision = false;
-	collisionType = entityNS::CIRCLE;
+	collisionType = entityNS::BOX;
 	target = false;
 	edge.bottom = -explosionNS::HEIGHT/2;
 	spriteData.scale = 1;
@@ -62,17 +62,16 @@ void Explosion::update(float frameTime)
 		setActive(false);
 		alive = false;
 	}
-	/*if(getCurrentFrame() == 0)
-	{
-		spriteData.width = 23;
-	}
+	if(getCurrentFrame()==0) setEdge(NO_COL_BOX);
 	else if(getCurrentFrame() == 1)
 	{
-		spriteData.width = 37;
-	}*/
+		RECT r ={COLLISION_BOX_EXP.bottom/2,COLLISION_BOX_EXP.left/2, COLLISION_BOX_EXP.top/2, COLLISION_BOX_EXP.right/2};
+		setEdge(r);
+	}
 	else if(getCurrentFrame() == 2) 
 	{
-		setFrameDelay(.6f);
+		setEdge(COLLISION_BOX_EXP);
+		setFrameDelay(1.5f);
 	}
 	else if(getCurrentFrame() == 3) animComplete = true;
 

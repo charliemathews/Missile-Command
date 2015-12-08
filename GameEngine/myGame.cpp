@@ -493,10 +493,7 @@ void myGame::update()
 			rocketsRemaining[index - 1].setVisible(false);
 		for (int i = index - 1; i >= 0; i--)
 			rocketsRemaining[i].setVisible(true);
-
-
-
-
+	
 		//particles
 		pm.update(frameTime);
 
@@ -818,12 +815,12 @@ void myGame::render()
 		if(!isNight && nightCount == 1)
 		{
 			timer += frameTime;
-			if(timer <= 4.00)	dxFont->print("See? That wasn't so bad.", 100,100);
+			if(timer >= 3.00 && timer <= 7.00)	dxFont->print("See? That wasn't so bad.", 100,100);
 		}
 		if(!isNight && nightCount == 2)
 		{
 			timer += frameTime;
-			if(timer<=4.00 )dxFont->print("You're almost there!", 100,100);
+			if(timer >= 3.00 && timer <= 7.00)dxFont->print("You're almost there!", 100,100);
 		}
 		for (int i = 0; i < MAX_ROCKETS; i++)
 			rocketsRemaining[i].draw();
@@ -842,10 +839,10 @@ void myGame::render()
 		else dxFont->print("You tried...", 70, 50);
 
 
-		if(nightCount == 1) dxFont->print("You didn't even make it one night...",70,150);
-		else if(nightCount == 2) dxFont->print("You made it 1 night!",70,150);
-		else if(nightCount == 3) dxFont->print("You made it 2 nights!",70,150);
-		else if(nightCount == 4) dxFont->print("You made it all 3 nights!",70,150);
+		if(nightCount == 0) dxFont->print("You didn't even make it one night...",70,150);
+		else if(nightCount == 1) dxFont->print("You made it 1 night!",70,150);
+		else if(nightCount == 2) dxFont->print("You made it 2 nights!",70,150);
+		else if(nightCount == 3) dxFont->print("You made it all 3 nights!",70,150);
 
 		ss.str("");
 		ss.clear();
@@ -859,13 +856,13 @@ void myGame::render()
 
 		ss.str("");
 		ss.clear();
-		cityMultiplier = cities.getSize();
+		cityMultiplier = numCities;
 		ss << cityMultiplier;
 		dxFont->print("\t+ 100 x " + ss.str(),70,300);
 
 		if(endedGame == false) 
 		{
-			nightCount--;
+			//nightCount--;
 			score+=cityMultiplier*100;
 			score+=nightCount*200;
 			addHighScores(score);
@@ -1038,8 +1035,8 @@ void myGame::scrollBG()
 	{
 		starImage.setY(starImage.getY()-50 * frameTime);
 	}
-	if(isNight) backgroundSpeed = -35;
-	else backgroundSpeed = -50;
+	if(isNight) backgroundSpeed = -40;
+	else backgroundSpeed = -60;
 	float y = backgroundImage.getY() + backgroundSpeed * frameTime;
 	backgroundImage.setY(y);
 

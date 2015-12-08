@@ -66,7 +66,7 @@ private:
 	EntityManager cities ;
 	EntityManager spits ;
 	EntityManager explosions ;
-
+	
 	int score ;
 	float timer ;
 	float bolideTimer ;
