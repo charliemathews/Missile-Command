@@ -656,6 +656,7 @@ void myGame::collisions()
 						if(sfxOn)audio->playCue("explosion");
 						rocketCollision->setActive(false);
 						score += 250 ;
+						makeExplosion(VECTOR2(rocketCollision->getX()-explosionNS::WIDTH/4,rocketCollision->getY()-explosionNS::HEIGHT/2));
 						collisionVector = D3DXVECTOR2(0,0);
 						scoreFont->setFontColor(graphicsNS::GREEN);
 						aliens_raw[i]->setHealth(-1);
