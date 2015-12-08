@@ -13,7 +13,7 @@ class ParticleManager
 	VECTOR2 velocity; //all particles created using SetVisibleNParticles() will use this velocity
 	VECTOR2 position; //all particles created using SetVisibleNParticles() will use this position
 	TextureManager tm;
-
+	float lifetime;
 	float ParticleManager::getVariance();// returns a number between 50% and 150% for particle variance
 
 public:
@@ -24,7 +24,7 @@ public:
 	void ParticleManager::setPosition(VECTOR2 pos) {position = pos;}
 	void ParticleManager::setVelocity(VECTOR2 vel) {velocity = vel;}
 	bool ParticleManager::initialize(Graphics *g);
-
+	void ParticleManager::setLifetime(float lf);
 	void ParticleManager::update(float frametime);
 	void ParticleManager::draw();
 

@@ -81,6 +81,7 @@ private:
 	std::stringstream buffer ;
 	//particles
 	ParticleManager pm;
+	ParticleManager pmCity;
 	//patterns
 	Pattern* alienPattern;
 	Pattern* alienPattern2;
@@ -115,6 +116,7 @@ public:
 	void makeExplosion(VECTOR2 source);
 	void fireSpitball(VECTOR2 source);
 	void createParticleEffect(VECTOR2 pos, VECTOR2 vel, int numParticles);
+	void createSmoke(VECTOR2 pos, VECTOR2 vel, int numParticles);
 	void addHighScores(int newScore);
 	void restartGame();
 	void loadHighScores();

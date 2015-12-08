@@ -143,6 +143,9 @@ void myGame::initialize(HWND hwnd)
 
 	//particles
 	pm.initialize(graphics);
+	pm.setLifetime(.25f);
+	pmCity.initialize(graphics);
+	pmCity.setLifetime(2.0f);
 	//menu background
 	if(!menubTM.initialize(graphics,MENU_IMAGE))
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing background texture"));
@@ -496,7 +499,7 @@ void myGame::update()
 	
 		//particles
 		pm.update(frameTime);
-
+		pmCity.update(frameTime);
 		break;
 	case endGame:
 
@@ -628,10 +631,8 @@ void myGame::collisions()
 				{
 					VECTOR2 foo = VECTOR2(bolides_raw[i]->getPositionX()-10, bolides_raw[i]->getPositionY()+5);
 					VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (20 - 10)) -10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
-					createParticleEffect(foo, VECTOR2(bar.x,-10), 30);
-					foo = VECTOR2(bolides_raw[i]->getPositionX()-10, bolides_raw[i]->getPositionY()+5);
-					bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (20 - 10)) -10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
-					createParticleEffect(foo, VECTOR2(bar.x,-10), 30);
+					createSmoke(foo, VECTOR2(bar.x,-10), 100);
+					
 					if(sfxOn)audio->playCue("explosion");
 					cityCollision->damage(1);
 					bolides_raw[i]->setHealth(-1);
@@ -728,10 +729,8 @@ void myGame::collisions()
 					{
 						VECTOR2 foo = VECTOR2(spits_raw[i]->getPositionX()-10, spits_raw[i]->getPositionY()+5);
 						VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (40 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (40)) + 0);
-						createParticleEffect(foo, bar, 25);
-						foo = VECTOR2(bolides_raw[i]->getPositionX()-10, bolides_raw[i]->getPositionY()+5);
-						bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (20 - 10)) -10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
-						createParticleEffect(foo, VECTOR2(bar.x,-10), 30);
+						createSmoke(foo, bar, 100);
+						
 						if(sfxOn)audio->playCue("explosion");
 						cityCollision->damage(1);
 						score -= 200 ;
@@ -796,6 +795,7 @@ void myGame::render()
 		bolides.draw();
 		aliens.draw();
 		pm.draw();
+		pmCity.draw();
 		rockets.draw();
 		thePlayer.draw(thePlayer.getColorFilter());
 		explosions.draw();
@@ -941,7 +941,7 @@ void myGame::releaseAll()
 	crossHairTM.onLostDevice();
 	explosionTM.onLostDevice();
 	menubTM.onLostDevice();
-
+	
 	explosions.clear();
 	rockets.clear();
 	cities.clear();
@@ -1167,6 +1167,12 @@ void myGame::createParticleEffect(VECTOR2 pos, VECTOR2 vel, int numParticles){
 	pm.setPosition(pos);
 	pm.setVelocity(vel);
 	pm.setVisibleNParticles(numParticles);
+}
+void myGame::createSmoke(VECTOR2 pos, VECTOR2 vel, int numParticles){
+
+	pmCity.setPosition(pos);
+	pmCity.setVelocity(vel);
+	pmCity.setVisibleNParticles(numParticles);
 }
 
 void myGame::restartGame()

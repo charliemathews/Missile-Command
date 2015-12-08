@@ -25,6 +25,14 @@ void ParticleManager::setInvisibleAllParticles()
 		particles[i].setActive(false);
 	}
 }
+void ParticleManager::setLifetime(float lf)
+{
+	lifetime = lf;
+	for (int i = 0; i < MAX_NUMBER_PARTICLES; i++)
+	{
+		particles[i].setMaxTimeAlive(lf);
+	}
+}
 void ParticleManager::setVisibleNParticles(int n)
 {
 	int activatedParticles = 0;
@@ -33,7 +41,7 @@ void ParticleManager::setVisibleNParticles(int n)
 		if (!particles[i].getActive()) //found an inactive particle
 		{
 			particles[i].setActive(true);
-			particles[i].setMaxTimeAlive(MAX_PARTICLE_LIFETIME*getVariance());
+			particles[i].setMaxTimeAlive(particles[i].getMaxTimeAlive()*getVariance());
 			float newX = velocity.x * getVariance(); 
 			float newY = velocity.y  * getVariance();
 			VECTOR2 v = VECTOR2(newX,newY);
@@ -41,6 +49,7 @@ void ParticleManager::setVisibleNParticles(int n)
 			particles[i].setY(position.y);
 			particles[i].setVelocity(v);
 			particles[i].setVisible(true);
+			particles[i].setMaxTimeAlive(lifetime);
 			activatedParticles++;
 			if (activatedParticles == n)
 				return;

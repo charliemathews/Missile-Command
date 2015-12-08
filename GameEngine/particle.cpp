@@ -11,7 +11,7 @@ void Particle::resetParticle()
 	timeAlive = 0;
 	visible = false;
 	active = false;
-	maxTimeAlive = 0;
+	//maxTimeAlive = 0;
 	setX(0);
 	setY(0);
 }
