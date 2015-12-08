@@ -365,7 +365,8 @@ void myGame::update()
 		else if(mAlien.getY() < 0) mAlien.setY(GAME_HEIGHT-20);
 		mAlien.update(frameTime);*/
 		mAlien.update(frameTime);
-		vel = mAlien.getPosition() - VECTOR2(input->getMouseX(),input->getMouseY());		if(vel.x == 0 && vel.y == 0) return ;
+		vel = mAlien.getPosition() - VECTOR2(input->getMouseX(),input->getMouseY());		
+		if(vel.x == 0 && vel.y == 0) return ;
 		foo = D3DXVec2Normalize(&vel, &vel);
 		mAlien.setVelocity(200*-vel);
 		break;
@@ -599,9 +600,6 @@ void myGame::collisions()
 					rocketCollision->setActive(false);
 					bolides_raw[i]->setHealth(-1);
 					score += 100 ;
-					VECTOR2 foo = VECTOR2(bolides_raw[i]->getPositionX()-10, bolides_raw[i]->getPositionY()+5);
-					VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (50 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
-					createParticleEffect(foo, bar, 10);
 					collisionVector = D3DXVECTOR2(0,0);
 					makeExplosion(VECTOR2(rocketCollision->getX()-explosionNS::WIDTH/4,rocketCollision->getY()-explosionNS::HEIGHT/2));
 					scoreFont->setFontColor(graphicsNS::GREEN);
@@ -617,9 +615,6 @@ void myGame::collisions()
 					if(sfxOn)audio->playCue("hit");
 					bolides_raw[i]->setHealth(-1);
 					score += 100 ;
-					VECTOR2 foo = VECTOR2(bolides_raw[i]->getPositionX()-10, bolides_raw[i]->getPositionY()+5);
-					VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (50 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
-					createParticleEffect(foo, bar, 10);
 					collisionVector = D3DXVECTOR2(0,0);
 					scoreFont->setFontColor(graphicsNS::GREEN);
 
@@ -665,10 +660,6 @@ void myGame::collisions()
 						score += 250 ;
 						collisionVector = D3DXVECTOR2(0,0);
 						scoreFont->setFontColor(graphicsNS::GREEN);
-						VECTOR2 foo = VECTOR2(aliens_raw[i]->getPositionX()-10, aliens_raw[i]->getPositionY()+5);
-						VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (40 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (40)) + 0);
-						createParticleEffect(foo, bar, 25);
-						makeExplosion(VECTOR2(rocketCollision->getX()-explosionNS::WIDTH/4,rocketCollision->getY()-explosionNS::HEIGHT/2));
 						aliens_raw[i]->setHealth(-1);
 					}
 					rocketCollision == NULL ;
@@ -695,9 +686,6 @@ void myGame::collisions()
 					{
 						if(sfxOn)audio->playCue("hit");
 						score += 100 ;
-						VECTOR2 foo = VECTOR2(aliens_raw[i]->getPositionX()-10, aliens_raw[i]->getPositionY()+5);
-						VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (50 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
-						createParticleEffect(foo, bar, 10);
 						collisionVector = D3DXVECTOR2(0,0);
 						scoreFont->setFontColor(graphicsNS::GREEN);
 						aliens_raw[i]->setHealth(-1);
@@ -724,9 +712,6 @@ void myGame::collisions()
 					score += 200 ;
 					collisionVector = D3DXVECTOR2(0,0);
 					scoreFont->setFontColor(graphicsNS::GREEN);
-					VECTOR2 foo = VECTOR2(spits_raw[i]->getPositionX()-10, spits_raw[i]->getPositionY()+5);
-					VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (40 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (40)) + 0);
-					createParticleEffect(foo, bar, 25);
 					makeExplosion(VECTOR2(rocketCollision->getX()-explosionNS::WIDTH/4,rocketCollision->getY()-explosionNS::HEIGHT/2));
 					spits_raw[i]->setHealth(-1);
 				}
@@ -759,9 +744,6 @@ void myGame::collisions()
 					{
 						if(sfxOn)audio->playCue("hit");
 						score += 100 ;
-						VECTOR2 foo = VECTOR2(spits_raw[i]->getPositionX()-10, spits_raw[i]->getPositionY()+5);
-						VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (50 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
-						createParticleEffect(foo, bar, 10);
 						collisionVector = D3DXVECTOR2(0,0);
 						scoreFont->setFontColor(graphicsNS::GREEN);
 						spits_raw[i]->setHealth(-1);
