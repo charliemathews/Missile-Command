@@ -374,7 +374,10 @@ void myGame::update()
 
 		for(int i = 0; i < rockets.getSize(); ++i)
 		{
-			createParticleEffect(VECTOR2(rockets_raw[i]->getCenterX()-15, rockets_raw[i]->getCenterY()),-rockets_raw[i]->getVelocity(),2);
+			//ROCKET PARTICLES
+			if(rockets_raw[i]->getTarget().x > GAME_WIDTH / 2) createParticleEffect(VECTOR2(rockets_raw[i]->getX()+rocketNS::HEIGHT/2 + rockets_raw[i]->getDegrees()/90, rockets_raw[i]->getY()),-rockets_raw[i]->getVelocity(),2);
+			else createParticleEffect(VECTOR2(rockets_raw[i]->getX()+rocketNS::HEIGHT/2, rockets_raw[i]->getCenterY()),-rockets_raw[i]->getVelocity(),2);
+		
 		}
 		for(int i = 0; i < explosions.getSize(); ++i)
 		{
