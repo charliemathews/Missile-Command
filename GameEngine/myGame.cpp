@@ -628,6 +628,12 @@ void myGame::collisions()
 			{
 				if(cityCollision->getHealth() > 0)
 				{
+					VECTOR2 foo = VECTOR2(bolides_raw[i]->getPositionX()-10, bolides_raw[i]->getPositionY()+5);
+					VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (20 - 10)) -10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
+					createParticleEffect(foo, VECTOR2(bar.x,-10), 30);
+					foo = VECTOR2(bolides_raw[i]->getPositionX()-10, bolides_raw[i]->getPositionY()+5);
+					bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (20 - 10)) -10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
+					createParticleEffect(foo, VECTOR2(bar.x,-10), 30);
 					if(sfxOn)audio->playCue("explosion");
 					cityCollision->damage(1);
 					bolides_raw[i]->setHealth(-1);
@@ -635,9 +641,7 @@ void myGame::collisions()
 					scoreFont->setFontColor(graphicsNS::RED);
 					cityCollision->setColorFilter(graphicsNS::RED);
 					collisionVector = D3DXVECTOR2(0,0);
-					VECTOR2 foo = VECTOR2(bolides_raw[i]->getPositionX()-10, bolides_raw[i]->getPositionY()+5);
-					VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (20 - 10)) -10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
-					createParticleEffect(foo, VECTOR2(bar.x,-10), 10);
+					
 				}
 
 
@@ -724,15 +728,18 @@ void myGame::collisions()
 				{
 					if(cityCollision->getHealth() > 0)
 					{
+						VECTOR2 foo = VECTOR2(spits_raw[i]->getPositionX()-10, spits_raw[i]->getPositionY()+5);
+						VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (40 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (40)) + 0);
+						createParticleEffect(foo, bar, 25);
+						foo = VECTOR2(bolides_raw[i]->getPositionX()-10, bolides_raw[i]->getPositionY()+5);
+						bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (20 - 10)) -10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
+						createParticleEffect(foo, VECTOR2(bar.x,-10), 30);
 						if(sfxOn)audio->playCue("explosion");
 						cityCollision->damage(1);
 						score -= 200 ;
 						scoreFont->setFontColor(graphicsNS::RED);
 						cityCollision->setColorFilter(graphicsNS::RED);
 						collisionVector = D3DXVECTOR2(0,0);
-						VECTOR2 foo = VECTOR2(spits_raw[i]->getPositionX()-10, spits_raw[i]->getPositionY()+5);
-						VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (40 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (40)) + 0);
-						createParticleEffect(foo, bar, 25);
 						spits_raw[i]->setHealth(-1);
 					}
 
@@ -875,6 +882,7 @@ void myGame::render()
 		endedGame = true;
 		break;
 	case credits:
+		menub.draw();
 		creditsImage.draw();
 		break;
 	case instruct:

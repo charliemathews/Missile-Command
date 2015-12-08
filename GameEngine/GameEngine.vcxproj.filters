@@ -170,11 +170,11 @@
     <ClInclude Include="particle.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="particleManager.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
     <ClInclude Include="explosion.h">
       <Filter>Header Files\Entities\Projectiles</Filter>
+    </ClInclude>
+    <ClInclude Include="particleManager.h">
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
