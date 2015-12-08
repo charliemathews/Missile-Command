@@ -437,12 +437,12 @@ void myGame::update()
 		}
 
 		if(alienTimer < 8.00) alienTimer += frameTime;
-		else if(isNight && nightCount < 3)
+		else if(isNight && nightCount < 2)
 		{
 			spawnAlien();
 			alienTimer = 0;
 		}
-		else if(isNight && nightCount == 3)
+		else if(isNight && nightCount >= 2)
 		{
 			int randNum = (rand() % 3)+1;
 			for(int i = 0; i < randNum; i++)
@@ -503,9 +503,14 @@ void myGame::update()
 		break;
 	case endGame:
 
-		ShowCursor(true);
-		if(input->getMouseLButton()) enterDepressedLastFrame = true;
-		if (!input->getMouseLButton() && enterDepressedLastFrame)
+		ShowCursor(false);
+		if(input->anyKeyPressed())
+		{
+			if(input->isKeyDown(VK_BACK)) scoreName = scoreName.substr(0,scoreName.size()-1);
+			else if(scoreName.size() <= 20) scoreName += input->getCharIn();
+		}
+		if(input->isKeyDown(VK_RETURN)) enterDepressedLastFrame = true;
+		if (!input->isKeyDown(VK_RETURN) && enterDepressedLastFrame)
 		{
 			restartGame();
 			gameStates = credits;
@@ -816,20 +821,19 @@ void myGame::render()
 		if(!isNight && nightCount == 1)
 		{
 			timer += frameTime;
-			if(timer >= 6.00 && timer <= 10.00)
+			if(timer >= 4.00)
 			{
 				dxFont->print("See? That wasn't so bad.", 100,100);
-				timer = 0;
+				
 			}
 
 		}
 		if(!isNight && nightCount == 2)
 		{
 			timer += frameTime;
-			if(timer >= 6.00 && timer <= 10.00)
+			if(timer >= 4.00)
 			{
-				dxFont->print("You're almost there!", 100,100);
-				timer = 0;
+				dxFont->print ("You're almost there!", 100,100);
 			}
 		}
 		for (int i = 0; i < MAX_ROCKETS; i++)
@@ -882,11 +886,17 @@ void myGame::render()
 		ss.clear();
 		ss << score;
 		dxFont->print("Final Score: " + ss.str(),70,400);
-
+		dxFont->print("Please enter your name...",70,450),
 		ss.str("");
 		ss.clear();
-		dxFont->print("click to continue",70,450);
+		dxFont->print("hit <enter> to continue",70,550);
 		endedGame = true;
+		ss<<scoreName;
+		dxFont->setFontColor(graphicsNS::RED);
+		dxFont->print(ss.str(),70,500);
+		ss.str("");
+		ss.clear();
+
 		break;
 	case credits:
 		menub.draw();
@@ -901,7 +911,7 @@ void myGame::render()
 
 		dxFont->setFontColor(graphicsNS::WHITE);
 		dxFont->print("High Scores", 50, GAME_HEIGHT/8);
-
+		dxFont->print("click to return",50,500);
 		for (int i = 0; i < MAX_SCORES_DISPLAYED; i++)
 		{
 			if (topTenScores[i] == INT_MIN)

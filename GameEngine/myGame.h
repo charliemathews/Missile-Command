@@ -91,6 +91,7 @@ private:
 	bool isNight;
 	bool isTutorial;
 
+	std::string scoreName;
 	int topTenScores[MAX_SCORES_DISPLAYED];
 
 public:
