@@ -587,7 +587,7 @@ void myGame::collisions()
 				bolideCollision->bounce(collisionVector, *bolides_raw[i]);
 				collisionVector = D3DXVECTOR2(0,0);
 			}
-			bolideCollision == NULL ;
+			bolideCollision ==NULL ;
 
 			if(rockets_size > 0)
 			{
@@ -603,21 +603,22 @@ void myGame::collisions()
 					scoreFont->setFontColor(graphicsNS::GREEN);
 
 				}
-				rocketCollision == NULL ;
+				rocketCollision = NULL ;
 			}
 			if(explosions_size > 0)
 			{
 				expCollision = (Explosion*)explosions.checkCollision(bolides_raw[i], collisionVector) ;
 				if(expCollision != NULL)
 				{
-					if(sfxOn)audio->playCue("hit");
+					
 					bolides_raw[i]->setHealth(-1);
+					if(sfxOn)audio->playCue("hit");
 					score += 100 ;
 					collisionVector = D3DXVECTOR2(0,0);
 					scoreFont->setFontColor(graphicsNS::GREEN);
 
 				}
-				expCollision == NULL ;
+				expCollision = NULL ;
 			}
 
 			cityCollision = (City*)cities.checkCollision(bolides_raw[i], collisionVector) ;
@@ -643,7 +644,7 @@ void myGame::collisions()
 
 
 			}
-			cityCollision == NULL ;
+			cityCollision = NULL ;
 		}
 
 		if(aliens_size > 0)
@@ -665,7 +666,7 @@ void myGame::collisions()
 						scoreFont->setFontColor(graphicsNS::GREEN);
 						aliens_raw[i]->setHealth(-1);
 					}
-					rocketCollision == NULL ;
+					rocketCollision = NULL ;
 				}
 			}
 			if(aliens_size > 1)
@@ -678,7 +679,7 @@ void myGame::collisions()
 						alienCollision->bounce(collisionVector,*aliens_raw[i]);
 						collisionVector = D3DXVECTOR2(0,0);
 					}
-					alienCollision == NULL ;
+					alienCollision = NULL ;
 				}
 				for(int i = 0; i < aliens_size; ++i)
 				{
@@ -694,7 +695,7 @@ void myGame::collisions()
 						aliens_raw[i]->setHealth(-1);
 
 					}
-					expCollision == NULL ;
+					expCollision = NULL ;
 				}
 				}
 			}
@@ -718,7 +719,7 @@ void myGame::collisions()
 					makeExplosion(VECTOR2(rocketCollision->getX()-explosionNS::WIDTH/4,rocketCollision->getY()-explosionNS::HEIGHT/2));
 					spits_raw[i]->setHealth(-1);
 				}
-				rocketCollision == NULL ;
+				rocketCollision = NULL ;
 
 				cityCollision = (City*)cities.checkCollision(spits_raw[i], collisionVector) ;
 				if(cityCollision != NULL )
@@ -742,7 +743,7 @@ void myGame::collisions()
 
 				}
 
-				cityCollision == NULL ;
+				cityCollision = NULL ;
 				if(explosions_size > 0)
 				{
 					expCollision = (Explosion*)explosions.checkCollision(spits_raw[i], collisionVector) ;
@@ -755,7 +756,7 @@ void myGame::collisions()
 						spits_raw[i]->setHealth(-1);
 
 					}
-					expCollision == NULL ;
+					expCollision = NULL ;
 				}
 			}
 		}
@@ -815,12 +816,21 @@ void myGame::render()
 		if(!isNight && nightCount == 1)
 		{
 			timer += frameTime;
-			if(timer >= 3.00 && timer <= 7.00)	dxFont->print("See? That wasn't so bad.", 100,100);
+			if(timer >= 6.00 && timer <= 10.00)
+			{
+				dxFont->print("See? That wasn't so bad.", 100,100);
+				timer = 0;
+			}
+
 		}
 		if(!isNight && nightCount == 2)
 		{
 			timer += frameTime;
-			if(timer >= 3.00 && timer <= 7.00)dxFont->print("You're almost there!", 100,100);
+			if(timer >= 6.00 && timer <= 10.00)
+			{
+				dxFont->print("You're almost there!", 100,100);
+				timer = 0;
+			}
 		}
 		for (int i = 0; i < MAX_ROCKETS; i++)
 			rocketsRemaining[i].draw();
@@ -1137,7 +1147,7 @@ void myGame::makeExplosion(VECTOR2 source)
 
 	newExplosion->setX(source.x);
 	newExplosion->setY(source.y);
-	newExplosion->setEdge(COLLISION_BOX_EXP);
+	newExplosion->setEdge(COLLISION_BOX_EXP_SMALL);
 	
 	newExplosion->setVisible();
 	newExplosion->setActive(true);

@@ -62,12 +62,6 @@ void Explosion::update(float frameTime)
 		setActive(false);
 		alive = false;
 	}
-	if(getCurrentFrame()==0) setEdge(NO_COL_BOX);
-	else if(getCurrentFrame() == 1)
-	{
-		RECT r ={COLLISION_BOX_EXP.bottom/2,COLLISION_BOX_EXP.left/2, COLLISION_BOX_EXP.top/2, COLLISION_BOX_EXP.right/2};
-		setEdge(r);
-	}
 	else if(getCurrentFrame() == 2) 
 	{
 		setEdge(COLLISION_BOX_EXP);
