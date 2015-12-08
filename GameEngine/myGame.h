@@ -117,6 +117,6 @@ public:
 	void createParticleEffect(VECTOR2 pos, VECTOR2 vel, int numParticles);
 	void addHighScores(int newScore);
 	void restartGame();
+	void loadHighScores();
 };
-
 #endif

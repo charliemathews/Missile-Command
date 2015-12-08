@@ -177,4 +177,9 @@
       <Filter>Header Files\Entities\Projectiles</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="highScores.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+  </ItemGroup>
 </Project>

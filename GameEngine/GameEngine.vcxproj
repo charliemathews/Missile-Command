@@ -61,6 +61,9 @@
     <ClInclude Include="textDX.h" />
     <ClInclude Include="textureManager.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="highScores.txt" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0A97D86D-0DF3-4E8B-A8EB-B7F1E7854296}</ProjectGuid>
     <RootNamespace>GameEngine</RootNamespace>

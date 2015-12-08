@@ -1,4 +1,4 @@
-
+#include <fstream>
 #include <sstream>
 using namespace std ;
 
@@ -12,9 +12,7 @@ myGame::myGame()
 	{
 		topTenScores[i] = INT_MIN;
 	}
-
-	//nothing here, move on
-	//rocketsAvailable = 5;
+	loadHighScores();
 }
 
 //=============================================================================
@@ -1152,11 +1150,23 @@ void myGame::createParticleEffect(VECTOR2 pos, VECTOR2 vel, int numParticles){
 	pm.setVisibleNParticles(numParticles);
 }
 
+void myGame::restartGame()
+{
+	rockets.clear();
+	cities.clear();
+	bolides.clear();
+	aliens.clear();
+	spits.clear();
+	explosions.clear();
+	audio->stopCue("background");
+	resetAll();
+
+	initialize(hwnd);
+}
 
 bool wayToSort(int i, int j) { return i > j; }
 void myGame::addHighScores(int newScore)
 {
-
 	int allScores[MAX_SCORES_DISPLAYED + 1];
 
 	for (int i = 0; i < MAX_SCORES_DISPLAYED; i++)
@@ -1172,18 +1182,32 @@ void myGame::addHighScores(int newScore)
 	{
 		topTenScores[i] = allScores[i];
 	}
+
+	ofstream fout("highScores.txt");
+	if (fout.fail())
+		throw(GameError(gameErrorNS::FATAL_ERROR, "Error trying to write to highscores"));
+
+	for (int i = 0; i < MAX_SCORES_DISPLAYED; i++)
+	{
+		if (topTenScores[i] == INT_MIN)
+		{
+			break;	
+		}
+
+		fout << topTenScores[i] << "\n";
+	}
 }
 
-void myGame::restartGame()
+void myGame::loadHighScores()
 {
-	rockets.clear();
-	cities.clear();
-	bolides.clear();
-	aliens.clear();
-	spits.clear();
-	explosions.clear();
-	audio->stopCue("background");
-	resetAll();
+	ifstream fin("highScores.txt");
+	if (fin.fail())
+		throw(GameError(gameErrorNS::FATAL_ERROR, "Error reading from highscores"));
 
-	initialize(hwnd);
+	int i = 0;
+	for (int i = 0; i < MAX_SCORES_DISPLAYED; i++)
+	{
+		if ( (fin >> topTenScores[i]) == false)
+			break;
+	}
 }
