@@ -14,8 +14,8 @@ namespace rocketNS
 	const int HEIGHT = 18;					// image height
 	const int X = 0;						// location on screen
 	const int Y = 0;
-	const float SPEED_X = 600;				// initial velocity
-	const float SPEED_Y = 600;
+	const float SPEED_X = 400;				// initial velocity
+	const float SPEED_Y = 400;
 }
 
 // inherits from Entity class

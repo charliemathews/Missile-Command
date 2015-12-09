@@ -372,7 +372,7 @@ void myGame::update()
 		mAlien.setVelocity(200*-vel);
 		break;
 	case gamePlay:
-
+		ShowCursor(false);
 		for(int i = 0; i < rockets.getSize(); ++i)
 		{
 			//ROCKET PARTICLES
@@ -1233,7 +1233,7 @@ void myGame::addHighScores(int newScore)
 			break;	
 		}
 
-		fout << topTenScores[i] << "\n";
+		fout << topTenScores[i]<< "\n";
 	}
 }
 
