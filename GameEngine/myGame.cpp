@@ -596,6 +596,7 @@ void myGame::collisions()
 					rocketCollision->setActive(false);
 					bolides_raw[i]->setHealth(-1);
 					score += 100 ;
+					scoreUI.add(graphics, graphicsNS::GREEN, 1, 30, "+100", rocketCollision->getX()+40, rocketCollision->getY()+10);
 					collisionVector = D3DXVECTOR2(0,0);
 					makeExplosion(VECTOR2(rocketCollision->getX()-explosionNS::WIDTH/4,rocketCollision->getY()-explosionNS::HEIGHT/2));
 					scoreFont->setFontColor(graphicsNS::GREEN);
@@ -612,6 +613,7 @@ void myGame::collisions()
 					bolides_raw[i]->setHealth(-1);
 					if(sfxOn)audio->playCue("hit");
 					score += 100 ;
+					//scoreUI.add(graphics, graphicsNS::GREEN, 1, 30, "+100", expCollision->getX()+20, expCollision->getY()+10);
 					collisionVector = D3DXVECTOR2(0,0);
 					scoreFont->setFontColor(graphicsNS::GREEN);
 
@@ -632,6 +634,7 @@ void myGame::collisions()
 					cityCollision->damage(1);
 					bolides_raw[i]->setHealth(-1);
 					score -= 100 ;
+					scoreUI.add(graphics, graphicsNS::RED, 1, 30, "-100", cityCollision->getX()+5, cityCollision->getY()-30);
 					scoreFont->setFontColor(graphicsNS::RED);
 					cityCollision->setColorFilter(graphicsNS::RED);
 					collisionVector = D3DXVECTOR2(0,0);
@@ -657,6 +660,7 @@ void myGame::collisions()
 						if(sfxOn)audio->playCue("explosion");
 						rocketCollision->setActive(false);
 						score += 250 ;
+						scoreUI.add(graphics, graphicsNS::GREEN, 1, 30, "+250", rocketCollision->getX()+40, rocketCollision->getY()+10);
 						makeExplosion(VECTOR2(rocketCollision->getX()-explosionNS::WIDTH/4,rocketCollision->getY()-explosionNS::HEIGHT/2));
 						collisionVector = D3DXVECTOR2(0,0);
 						scoreFont->setFontColor(graphicsNS::GREEN);
@@ -685,7 +689,8 @@ void myGame::collisions()
 						if(expCollision != NULL)
 						{
 							if(sfxOn)audio->playCue("hit");
-							score += 100 ;
+							score += 250 ;
+							//scoreUI.add(graphics, graphicsNS::GREEN, 1, 30, "+250", expCollision->getX()+40, expCollision->getY()+10);
 							collisionVector = D3DXVECTOR2(0,0);
 							scoreFont->setFontColor(graphicsNS::GREEN);
 							aliens_raw[i]->setHealth(-1);
@@ -710,6 +715,7 @@ void myGame::collisions()
 					if(sfxOn)audio->playCue("hit");
 					rocketCollision->setActive(false);
 					score += 200 ;
+					scoreUI.add(graphics, graphicsNS::GREEN, 1, 30, "+200", rocketCollision->getX()+40, rocketCollision->getY()+10);
 					collisionVector = D3DXVECTOR2(0,0);
 					scoreFont->setFontColor(graphicsNS::GREEN);
 					makeExplosion(VECTOR2(rocketCollision->getX()-explosionNS::WIDTH/4,rocketCollision->getY()-explosionNS::HEIGHT/2));
@@ -729,6 +735,7 @@ void myGame::collisions()
 						if(sfxOn)audio->playCue("explosion");
 						cityCollision->damage(1);
 						score -= 200 ;
+						scoreUI.add(graphics, graphicsNS::RED, 1, 30, "-200", cityCollision->getX()+5, cityCollision->getY()-30);
 						scoreFont->setFontColor(graphicsNS::RED);
 						cityCollision->setColorFilter(graphicsNS::RED);
 						collisionVector = D3DXVECTOR2(0,0);
@@ -745,6 +752,7 @@ void myGame::collisions()
 					{
 						if(sfxOn)audio->playCue("hit");
 						score += 100 ;
+						//scoreUI.add(graphics, graphicsNS::GREEN, 1, 30, "+100", expCollision->getX()+40, expCollision->getY()+10);
 						collisionVector = D3DXVECTOR2(0,0);
 						scoreFont->setFontColor(graphicsNS::GREEN);
 						spits_raw[i]->setHealth(-1);
@@ -796,6 +804,8 @@ void myGame::render()
 		thePlayer.draw(thePlayer.getColorFilter());
 		explosions.draw();
 		crossHairImage.draw();
+
+		scoreUI.draw(frameTime);
 
 		if(isNight) timer = 0;
 		if(!isNight && nightCount == 0)

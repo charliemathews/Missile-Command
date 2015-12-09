@@ -25,6 +25,7 @@ class myGame;
 #include "image.h"
 #include "textureManager.h"
 #include "textDX.h"
+#include "textManager.h"
 
 #include "pattern.h"
 #include "menu.h"
@@ -58,6 +59,7 @@ private:
 	TextDX* scoreFont;
 	TextDX* smallFont; 
 	int scoreWidth;
+	TextManager scoreUI ;
 
 	Alien mAlien;
 	Player thePlayer ;
