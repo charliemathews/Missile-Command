@@ -10,7 +10,7 @@ myGame::myGame()
 {
 	for (int i = 0; i < MAX_SCORES_DISPLAYED; i++)
 	{
-		topTenScores[i] = INT_MIN;
+		topTenScores[i].second = INT_MIN;
 	}
 	loadHighScores();
 }
@@ -215,7 +215,7 @@ void myGame::initialize(HWND hwnd)
 	mAlien.setFrames(0,2);
 	mAlien.setCurrentFrame(0);
 	mAlien.setFrameDelay(0.8f);
-	
+
 	//player
 	if (!playerTM.initialize(graphics,PLAYER_IMAGE))
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing player texture"));
@@ -358,7 +358,7 @@ void myGame::update()
 		if(lineOpt == 3) gameStates = credits;
 		if(lineOpt == 4) gameStates = highScore;
 		//lil menu alien
-		
+
 		/*mAlien.update(frameTime);
 		if(mAlien.getX() >= GAME_WIDTH) mAlien.setX(0-mAlien.getWidth());
 		else if(mAlien.getX() < 0-mAlien.getWidth())  mAlien.setX(GAME_WIDTH-20);
@@ -378,7 +378,7 @@ void myGame::update()
 			//ROCKET PARTICLES
 			if(rockets_raw[i]->getTarget().x > GAME_WIDTH / 2) createParticleEffect(VECTOR2(rockets_raw[i]->getX()+rocketNS::HEIGHT/2 + rockets_raw[i]->getDegrees()/90, rockets_raw[i]->getY()),-rockets_raw[i]->getVelocity(),2);
 			else createParticleEffect(VECTOR2(rockets_raw[i]->getX()+rocketNS::HEIGHT/2, rockets_raw[i]->getCenterY()),-rockets_raw[i]->getVelocity(),2);
-		
+
 		}
 		for(int i = 0; i < explosions.getSize(); ++i)
 		{
@@ -410,7 +410,7 @@ void myGame::update()
 		//	}
 		//	//if(rockets_raw[i]->getVelocity().x == 0) makeExplosion(rockets_raw[i]->getPosition());
 		//}
-		
+
 
 		if(input->getMouseLButton())getMouseDepressedLast = true;
 		if(!input->getMouseLButton()&&getMouseDepressedLast)
@@ -418,8 +418,8 @@ void myGame::update()
 			getMouseDepressedLast = false;
 			if(rockets.getSize() < MAX_ROCKETS) fireRocket();
 		}
-			
-	
+
+
 		scrollBG();
 		numCities = 0;
 		for(int i = 0; i < cities.getSize(); i++)
@@ -428,7 +428,7 @@ void myGame::update()
 		}
 		if(nightCount >= 3 && backgroundImage.getY() <= -740)
 		{
-			
+
 			gameStates = endGame;
 		}
 		if(numCities == 0)
@@ -476,7 +476,7 @@ void myGame::update()
 			}
 		}
 
-	
+
 
 		aliens.update(frameTime);
 		cities.update(frameTime);
@@ -489,14 +489,14 @@ void myGame::update()
 		crossHairImage.setX(input->getMouseX() - crossHairImage.getWidth()/3);
 		crossHairImage.setY(input->getMouseY() - crossHairImage.getHeight()/2);
 		//
-		
+
 		//rockets stack
 		int index;
 		for (index = MAX_ROCKETS; index > (MAX_ROCKETS - rockets.getSize()); index--)
 			rocketsRemaining[index - 1].setVisible(false);
 		for (int i = index - 1; i >= 0; i--)
 			rocketsRemaining[i].setVisible(true);
-	
+
 		//particles
 		pm.update(frameTime);
 		pmCity.update(frameTime);
@@ -507,11 +507,21 @@ void myGame::update()
 		if(input->anyKeyPressed())
 		{
 			if(input->isKeyDown(VK_BACK)) scoreName = scoreName.substr(0,scoreName.size()-1);
-			else if(scoreName.size() <= 20) scoreName += input->getCharIn();
+			else if(scoreName.size() <= 10 && input->isKeyDown(VK_SHIFT) == false && 
+				input->isKeyDown(VK_SPACE) == false && input->isKeyDown(VK_RETURN) == false)
+			{
+				char newCharacter = input->getCharIn();
+				newCharacter = (char)toupper(newCharacter);
+				scoreName += newCharacter;
+			}
 		}
-		if(input->isKeyDown(VK_RETURN)) enterDepressedLastFrame = true;
+		if(input->isKeyDown(VK_RETURN))
+		{
+			enterDepressedLastFrame = true;
+		}
 		if (!input->isKeyDown(VK_RETURN) && enterDepressedLastFrame)
 		{
+			addHighScores(score, scoreName);
 			restartGame();
 			gameStates = credits;
 			enterDepressedLastFrame = false;
@@ -523,6 +533,7 @@ void myGame::update()
 		if (!input->getMouseLButton() && enterDepressedLastFrame)
 		{
 			gameStates = gameMenu;
+			ShowCursor(true);
 			enterDepressedLastFrame = false;
 		}
 		break;
@@ -618,7 +629,7 @@ void myGame::collisions()
 				expCollision = (Explosion*)explosions.checkCollision(bolides_raw[i], collisionVector) ;
 				if(expCollision != NULL)
 				{
-					
+
 					bolides_raw[i]->setHealth(-1);
 					if(sfxOn)audio->playCue("hit");
 					score += 100 ;
@@ -637,7 +648,7 @@ void myGame::collisions()
 					VECTOR2 foo = VECTOR2(bolides_raw[i]->getPositionX()-10, bolides_raw[i]->getPositionY()+5);
 					VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (20 - 10)) -10,((float(rand()) / float(RAND_MAX)) * (50)) + 0);
 					createSmoke(foo, VECTOR2(bar.x,-10), 100);
-					
+
 					if(sfxOn)audio->playCue("explosion");
 					cityCollision->damage(1);
 					bolides_raw[i]->setHealth(-1);
@@ -645,7 +656,7 @@ void myGame::collisions()
 					scoreFont->setFontColor(graphicsNS::RED);
 					cityCollision->setColorFilter(graphicsNS::RED);
 					collisionVector = D3DXVECTOR2(0,0);
-					
+
 				}
 
 
@@ -689,20 +700,20 @@ void myGame::collisions()
 				}
 				for(int i = 0; i < aliens_size; ++i)
 				{
-				if(explosions_size > 0)
-				{
-					expCollision = (Explosion*)explosions.checkCollision(aliens_raw[i], collisionVector) ;
-					if(expCollision != NULL)
+					if(explosions_size > 0)
 					{
-						if(sfxOn)audio->playCue("hit");
-						score += 100 ;
-						collisionVector = D3DXVECTOR2(0,0);
-						scoreFont->setFontColor(graphicsNS::GREEN);
-						aliens_raw[i]->setHealth(-1);
+						expCollision = (Explosion*)explosions.checkCollision(aliens_raw[i], collisionVector) ;
+						if(expCollision != NULL)
+						{
+							if(sfxOn)audio->playCue("hit");
+							score += 100 ;
+							collisionVector = D3DXVECTOR2(0,0);
+							scoreFont->setFontColor(graphicsNS::GREEN);
+							aliens_raw[i]->setHealth(-1);
 
+						}
+						expCollision = NULL ;
 					}
-					expCollision = NULL ;
-				}
 				}
 			}
 		}
@@ -735,7 +746,7 @@ void myGame::collisions()
 						VECTOR2 foo = VECTOR2(spits_raw[i]->getPositionX()-10, spits_raw[i]->getPositionY()+5);
 						VECTOR2 bar = VECTOR2(((float(rand()) / float(RAND_MAX)) * (40 - 10)) + 10,((float(rand()) / float(RAND_MAX)) * (40)) + 0);
 						createSmoke(foo, bar, 100);
-						
+
 						if(sfxOn)audio->playCue("explosion");
 						cityCollision->damage(1);
 						score -= 200 ;
@@ -824,7 +835,7 @@ void myGame::render()
 			if(timer >= 4.00)
 			{
 				dxFont->print("See? That wasn't so bad.", 100,100);
-				
+
 			}
 
 		}
@@ -879,7 +890,6 @@ void myGame::render()
 			//nightCount--;
 			score+=cityMultiplier*100;
 			score+=nightCount*200;
-			addHighScores(score);
 		}
 
 		ss.str("");
@@ -887,7 +897,7 @@ void myGame::render()
 		ss << score;
 		dxFont->print("Final Score: " + ss.str(),70,400);
 		dxFont->print("Please enter your name...",70,450),
-		ss.str("");
+			ss.str("");
 		ss.clear();
 		dxFont->print("hit <enter> to continue",70,550);
 		endedGame = true;
@@ -896,8 +906,8 @@ void myGame::render()
 		dxFont->print(ss.str(),70,500);
 		ss.str("");
 		ss.clear();
-		
-		
+
+
 		if(isNight) dxFont->setFontColor(graphicsNS::WHITE);
 		else dxFont->setFontColor(graphicsNS::BLACK);
 
@@ -918,7 +928,7 @@ void myGame::render()
 		dxFont->print("click to return",50,500);
 		for (int i = 0; i < MAX_SCORES_DISPLAYED; i++)
 		{
-			if (topTenScores[i] == INT_MIN)
+			if (topTenScores[i].second == INT_MIN)
 			{
 				if (i == 0)
 					dxFont->print("No one has beaten the Llamas yet!", 50, 200);
@@ -926,7 +936,19 @@ void myGame::render()
 				break;
 			}
 
-			dxFont->print(to_string(i + 1) + ". " + to_string(topTenScores[i]), GAME_WIDTH/2 - 80, GAME_HEIGHT/4 + i * 40);
+			string firstHalf = to_string(i + 1) + ". " + topTenScores[i].first;
+			string secondHalf = to_string(topTenScores[i].second);
+			/*for (int i = 0; i < 20; i++)
+			{
+				if (i >= firstHalf.size())
+				{
+					firstHalf += " ";
+				}
+			}*/
+
+			//dxFont->print( firstHalf + to_string(topTenScores[i].second), GAME_WIDTH/2 - 80, GAME_HEIGHT/4 + i * 40);
+			dxFont->print( firstHalf, GAME_WIDTH/2 - 150, GAME_HEIGHT/4 + i * 40);
+			dxFont->print(secondHalf, GAME_WIDTH/2 + 150, GAME_HEIGHT/4 + i * 40);
 		}
 	}
 
@@ -955,7 +977,7 @@ void myGame::releaseAll()
 	crossHairTM.onLostDevice();
 	explosionTM.onLostDevice();
 	menubTM.onLostDevice();
-	
+
 	explosions.clear();
 	rockets.clear();
 	cities.clear();
@@ -1162,7 +1184,7 @@ void myGame::makeExplosion(VECTOR2 source)
 	newExplosion->setX(source.x);
 	newExplosion->setY(source.y);
 	newExplosion->setEdge(COLLISION_BOX_EXP_SMALL);
-	
+
 	newExplosion->setVisible();
 	newExplosion->setActive(true);
 
@@ -1197,23 +1219,26 @@ void myGame::restartGame()
 	aliens.clear();
 	spits.clear();
 	explosions.clear();
+	scoreName = "";
+
 	audio->stopCue("background");
 	resetAll();
 
 	initialize(hwnd);
 }
 
-bool wayToSort(int i, int j) { return i > j; }
-void myGame::addHighScores(int newScore)
+bool wayToSort(pair<string, int> i, pair<string, int> j) { return i.second > j.second; }
+void myGame::addHighScores(int newScore, string name)
 {
-	int allScores[MAX_SCORES_DISPLAYED + 1];
+	
+	pair<string, int> allScores[MAX_SCORES_DISPLAYED + 1];
 
 	for (int i = 0; i < MAX_SCORES_DISPLAYED; i++)
 	{
 		allScores[i] = topTenScores[i];
 	}
 
-	allScores[MAX_SCORES_DISPLAYED] = newScore;
+	allScores[MAX_SCORES_DISPLAYED] = pair<string,int>(name, newScore);
 
 	std::sort(allScores, allScores + (MAX_SCORES_DISPLAYED + 1), wayToSort);
 
@@ -1228,12 +1253,12 @@ void myGame::addHighScores(int newScore)
 
 	for (int i = 0; i < MAX_SCORES_DISPLAYED; i++)
 	{
-		if (topTenScores[i] == INT_MIN)
+		if (topTenScores[i].second == INT_MIN)
 		{
 			break;	
 		}
 
-		fout << topTenScores[i]<< "\n";
+		fout << topTenScores[i].first << " " << topTenScores[i].second << "\n";
 	}
 }
 
@@ -1246,7 +1271,11 @@ void myGame::loadHighScores()
 	int i = 0;
 	for (int i = 0; i < MAX_SCORES_DISPLAYED; i++)
 	{
-		if ( (fin >> topTenScores[i]) == false)
+
+		if ( (fin >> topTenScores[i].first) == false)
 			break;
+		else
+			fin>>topTenScores[i].second;
+		
 	}
 }

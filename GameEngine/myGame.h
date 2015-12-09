@@ -92,7 +92,7 @@ private:
 	bool isTutorial;
 
 	std::string scoreName;
-	int topTenScores[MAX_SCORES_DISPLAYED];
+	std::pair<std::string,int> topTenScores[MAX_SCORES_DISPLAYED];
 
 public:
 	// Constructor
@@ -118,8 +118,9 @@ public:
 	void fireSpitball(VECTOR2 source);
 	void createParticleEffect(VECTOR2 pos, VECTOR2 vel, int numParticles);
 	void createSmoke(VECTOR2 pos, VECTOR2 vel, int numParticles);
-	void addHighScores(int newScore);
+	void addHighScores(int newScore, std::string name);
 	void restartGame();
 	void loadHighScores();
+	//void sortHighScores(string scores[], int size);
 };
 #endif
