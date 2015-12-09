@@ -286,7 +286,6 @@ void myGame::initialize(HWND hwnd)
 	if (!explosionTM.initialize(graphics,EXPLOSION_IMAGE))
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing explosion texture"));
 
-
 	//initiialize font
 	dxFont = new TextDX();
 	if(dxFont->initialize(graphics, 25, true, false, "Retro Computer") == false)
@@ -296,6 +295,10 @@ void myGame::initialize(HWND hwnd)
 	if(scoreFont->initialize(graphics, 50, true, false, "Retro Computer") == false)
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing score font"));
 	scoreFont->setFontColor(graphicsNS::WHITE);
+	smallFont = new TextDX();
+	if(smallFont->initialize(graphics, 14, true, false, "Retro Computer") == false)
+		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing score font"));
+	smallFont->setFontColor(graphicsNS::WHITE);
 
 
 	// Initialize Menu
@@ -345,8 +348,9 @@ void myGame::update()
 		if(lineOpt == 0) 
 		{
 			ShowCursor(false);
-			gameStates = gamePlay;
+			
 			tickCounter = GetTickCount();
+			gameStates = gamePlay;
 		}
 		if(lineOpt == 1)
 		{
@@ -367,9 +371,8 @@ void myGame::update()
 		mAlien.update(frameTime);*/
 		mAlien.update(frameTime);
 		vel = mAlien.getPosition() - VECTOR2(input->getMouseX(),input->getMouseY());		
-		if(vel.x == 0 && vel.y == 0) return ;
-		foo = D3DXVec2Normalize(&vel, &vel);
-		mAlien.setVelocity(200*-vel);
+		if(vel.x != 0 && vel.y != 0) foo = D3DXVec2Normalize(&vel, &vel);
+		mAlien.setVelocity(110*-vel);
 		break;
 	case gamePlay:
 		ShowCursor(false);
@@ -380,37 +383,11 @@ void myGame::update()
 			else createParticleEffect(VECTOR2(rockets_raw[i]->getX()+rocketNS::HEIGHT/2, rockets_raw[i]->getCenterY()),-rockets_raw[i]->getVelocity(),2);
 
 		}
+
 		for(int i = 0; i < explosions.getSize(); ++i)
 		{
 			if(exp_raw[i]->getAnimationComplete()) exp_raw[i]->setHealth(-1);
 		}
-		//for(int i = 0; i < rockets.getSize(); ++i)
-		//{
-		//	if(rockets_raw[i]->getDir() > 0)
-		//	{
-		//		if(rockets_raw[i]->getSpriteData().x >= rockets_raw[i]->getTarget().x && rockets_raw[i]->getSpriteData().y <= rockets_raw[i]->getTarget().y)
-		//		{
-		//			makeExplosion(VECTOR2(rockets_raw[i]->getTarget().x-explosionNS::WIDTH/2,rockets_raw[i]->getTarget().y - explosionNS::HEIGHT/2));
-		//			rockets_raw[i]->setVelocity(VECTOR2(0,0));
-		//			rockets_raw[i]->setInvisible();
-		//			rockets_raw[i]->setActive(false);
-		//			rockets_raw[i]->setHealth(-1);
-		//		}
-		//	}
-		//	else if(rockets_raw[i]->getDir() <= 0)
-		//	{
-		//			if(rockets_raw[i]->getSpriteData().x <= rockets_raw[i]->getTarget().x && rockets_raw[i]->getSpriteData().y <= rockets_raw[i]->getTarget().y)
-		//			{
-		//				makeExplosion(VECTOR2(rockets_raw[i]->getTarget().x-explosionNS::WIDTH/2,rockets_raw[i]->getTarget().y - explosionNS::HEIGHT/2));
-		//				rockets_raw[i]->setVelocity(VECTOR2(0,0));
-		//				rockets_raw[i]->setInvisible();
-		//				rockets_raw[i]->setActive(false);
-		//				rockets_raw[i]->setHealth(-1);
-		//			}
-		//	}
-		//	//if(rockets_raw[i]->getVelocity().x == 0) makeExplosion(rockets_raw[i]->getPosition());
-		//}
-
 
 		if(input->getMouseLButton())getMouseDepressedLast = true;
 		if(!input->getMouseLButton()&&getMouseDepressedLast)
@@ -419,9 +396,9 @@ void myGame::update()
 			if(rockets.getSize() < MAX_ROCKETS) fireRocket();
 		}
 
-
 		scrollBG();
 		numCities = 0;
+
 		for(int i = 0; i < cities.getSize(); i++)
 		{
 			if(cities_raw[i]->getHealth() > 0) numCities++;
@@ -485,11 +462,10 @@ void myGame::update()
 		bolides.update(frameTime);
 		spits.update(frameTime);
 		explosions.update(frameTime);
-		//
+		//crosshair
 		crossHairImage.setX(input->getMouseX() - crossHairImage.getWidth()/3);
 		crossHairImage.setY(input->getMouseY() - crossHairImage.getHeight()/2);
-		//
-
+	
 		//rockets stack
 		int index;
 		for (index = MAX_ROCKETS; index > (MAX_ROCKETS - rockets.getSize()); index--)
@@ -500,6 +476,7 @@ void myGame::update()
 		//particles
 		pm.update(frameTime);
 		pmCity.update(frameTime);
+
 		break;
 	case endGame:
 
@@ -522,9 +499,10 @@ void myGame::update()
 		if (!input->isKeyDown(VK_RETURN) && enterDepressedLastFrame)
 		{
 			addHighScores(score, scoreName);
+			ShowCursor(true);
 			restartGame();
-			gameStates = credits;
 			enterDepressedLastFrame = false;
+			gameStates = gameMenu;
 		}
 		break;
 	case credits:
@@ -532,9 +510,9 @@ void myGame::update()
 		if(input->getMouseLButton()) enterDepressedLastFrame = true;
 		if (!input->getMouseLButton() && enterDepressedLastFrame)
 		{
-			gameStates = gameMenu;
 			ShowCursor(true);
 			enterDepressedLastFrame = false;
+			gameStates = gameMenu;
 		}
 		break;
 	case instruct:
@@ -542,8 +520,8 @@ void myGame::update()
 		if(input->getMouseLButton()) enterDepressedLastFrame = true;
 		if (!input->getMouseLButton() && enterDepressedLastFrame)
 		{
-			gameStates = gameMenu;
 			enterDepressedLastFrame = false;
+			gameStates = gameMenu;
 		}
 		break;
 	case highScore:
@@ -551,8 +529,9 @@ void myGame::update()
 		if(input->getMouseLButton()) enterDepressedLastFrame = true;
 		if (!input->getMouseLButton() && enterDepressedLastFrame)
 		{
-			gameStates = gameMenu;
+			
 			enterDepressedLastFrame = false;
+			gameStates = gameMenu;
 		}
 		break;
 	}
@@ -796,6 +775,7 @@ void myGame::render()
 		menub.draw();
 		menu->displayMenu();
 		mAlien.draw();
+		smallFont->print("*10/10 llamas recommend using a mouse",GAME_WIDTH/2+40,GAME_HEIGHT -20);
 		break;
 	case gamePlay:
 		backgroundImage2.draw();
@@ -925,7 +905,7 @@ void myGame::render()
 
 		dxFont->setFontColor(graphicsNS::WHITE);
 		dxFont->print("High Scores", 50, GAME_HEIGHT/8);
-		dxFont->print("click to return",50,500);
+		smallFont->print("click to return",50,550);
 		for (int i = 0; i < MAX_SCORES_DISPLAYED; i++)
 		{
 			if (topTenScores[i].second == INT_MIN)

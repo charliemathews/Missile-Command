@@ -56,6 +56,7 @@ private:
 
 	TextDX* dxFont;
 	TextDX* scoreFont;
+	TextDX* smallFont; 
 	int scoreWidth;
 
 	Alien mAlien;
