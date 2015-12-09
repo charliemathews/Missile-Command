@@ -896,6 +896,10 @@ void myGame::render()
 		dxFont->print(ss.str(),70,500);
 		ss.str("");
 		ss.clear();
+		
+		
+		if(isNight) dxFont->setFontColor(graphicsNS::WHITE);
+		else dxFont->setFontColor(graphicsNS::BLACK);
 
 		break;
 	case credits:
